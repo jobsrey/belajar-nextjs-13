@@ -5,6 +5,7 @@ import { IFormStatus, StatusCollaction } from "@/types/status.d";
 import { FormModal } from "./FormModal";
 import { BiPlus } from "react-icons/bi";
 import TableStatus from "./TableStatus";
+import { useSession } from "next-auth/react";
 
 interface PropsPagination {
   collaction: StatusCollaction | undefined;
@@ -41,10 +42,14 @@ const Pagination = ({ collaction, onPageClick }: PropsPagination) => {
   );
 };
 
-const StatusPage = () => {
+const PageStatusProvider = () => {
   const [updateStatus, setUpdateStatus] = useState<IFormStatus>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isNewRecord, setIsNewRecord] = useState<boolean>(false);
+
+  const { data: session } = useSession();
+  console.log(session?.user?.token) // no errors
+
 
   const {
     data: collaction,
@@ -119,4 +124,4 @@ const StatusPage = () => {
   );
 };
 
-export default StatusPage;
+export default PageStatusProvider;

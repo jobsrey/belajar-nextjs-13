@@ -1,8 +1,9 @@
 import MainLayout from "@/components/layouts/main/layout";
-import "./globals.css";
+import "./../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ReactQueryProvider>
-          <MainLayout>{children}</MainLayout>
-        </ReactQueryProvider>
+        <NextAuthProvider>
+          <ReactQueryProvider>
+            <MainLayout>{children}</MainLayout>
+          </ReactQueryProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
