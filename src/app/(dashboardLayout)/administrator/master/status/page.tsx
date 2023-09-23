@@ -11,11 +11,9 @@ const page = async () => {
     redirect("/user/login");
   }
 
-  console.log(session.user.token);
-
   return (
     <>
-      <PageStatusProvider />
+      <PageStatusProvider session={session} />
     </>
   );
 };

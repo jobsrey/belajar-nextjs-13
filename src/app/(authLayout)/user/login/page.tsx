@@ -4,6 +4,7 @@ import { TextField } from "@mui/material";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useRouter } from "next/navigation";
 
 const schema = yup
   .object({
@@ -15,22 +16,26 @@ const schema = yup
 type FormData = yup.InferType<typeof schema>;
 
 const LoginPage = () => {
+
+  const router = useRouter();
+
   //react form hook
   const { handleSubmit, control } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
   //on submit form
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    signIn("credentials", {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const result = await signIn("credentials", {
       email: data.email,
       password: data.password,
-  
       redirect: false,
-      callbackUrl: "/",
-    }).then(({ ok, error }:any) => {
-      console.log(error);
+      callbackUrl: "/administrator",
     });
+
+    if (result?.status === 200) {
+      router.push('/administrator')
+    }
   };
 
   return (

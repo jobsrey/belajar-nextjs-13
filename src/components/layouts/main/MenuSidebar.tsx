@@ -91,7 +91,7 @@ const MenuSidebar = () => {
           <h3 className="menu-title">Master Data</h3>
         </li>
         <li>
-          <ActiveLink href="/master/status">
+          <ActiveLink href="/administrator/master/status">
             <GrDocumentStore size={12} /> Status
           </ActiveLink>
         </li>

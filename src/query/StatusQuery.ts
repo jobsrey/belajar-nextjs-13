@@ -10,11 +10,15 @@ interface SearchStatus {
 }
 
 interface TSortServe {
-  sortColumnName?: string,
-  sortDirection?: 'desc' | 'asc'
+  sortColumnName?: string;
+  sortDirection?: "desc" | "asc";
 }
 
-export const useQueryDataStatus = () => {
+interface IProps {
+  token: string;
+}
+
+export const useQueryDataStatus = ({ token }: IProps) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [filterField, setFilterField] = useState<SearchStatus>({
@@ -22,6 +26,8 @@ export const useQueryDataStatus = () => {
     kode: "",
     description: "",
   });
+
+
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortDataServe, setSortDataServe] = useState<TSortServe>({});
 
@@ -39,6 +45,7 @@ export const useQueryDataStatus = () => {
     const params = queryKey[1];
     const response = await api.get<StatusCollaction>("/master/status", {
       params,
+      headers: { Authorization: "Bearer " + token },
     });
     return response.data;
   };
@@ -51,9 +58,8 @@ export const useQueryDataStatus = () => {
     meta: {},
   });
 
-
   //mutation create data
-  const createData = useMutation(async (status:IFormStatus) => {
+  const createData = useMutation(async (status: IFormStatus) => {
     const formData = new FormData();
     // newData?.fileUpload?.fileList?.forEach((file) => {
     //   formData.append("fileUpload", file.originFileObj);
@@ -66,12 +72,13 @@ export const useQueryDataStatus = () => {
     await api.post("/master/status", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + token
       },
     });
   });
 
   //handle create
-  const handleCreate = async (status:IFormStatus) => {
+  const handleCreate = async (status: IFormStatus) => {
     await createData.mutateAsync(status);
     queryClient.invalidateQueries(["collactionDataStatus"]);
   };
@@ -82,35 +89,37 @@ export const useQueryDataStatus = () => {
     formData.append("kode", status?.kode as string);
     formData.append("name", status?.name as string);
     formData.append("description", status?.description as string);
-    formData.append("_method","PATCH");
+    formData.append("_method", "PATCH");
 
     await api.post(`/master/status/${status?.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + token
       },
     });
   });
 
   //handle update
-  const handleUpdate = async (updatedData:IFormStatus) => {
+  const handleUpdate = async (updatedData: IFormStatus) => {
     await updateData.mutateAsync(updatedData);
     queryClient.invalidateQueries(["collactionDataStatus"]);
   };
 
   //mutation delete status
-  const deleteData = useMutation(async (id:string) => {
+  const deleteData = useMutation(async (id: string) => {
     const formData = new FormData();
-    formData.append("_method","DELETE");
+    formData.append("_method", "DELETE");
 
     await api.post(`/master/status/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + token
       },
     });
   });
 
   //handle delete
-  const handleDelete = async (id:string) => {
+  const handleDelete = async (id: string) => {
     await deleteData.mutateAsync(id);
     queryClient.invalidateQueries(["collactionDataStatus"]);
   };
