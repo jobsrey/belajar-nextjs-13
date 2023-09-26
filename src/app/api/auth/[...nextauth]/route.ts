@@ -21,10 +21,10 @@ export const authOptions:NextAuthOptions = {
 
         formData.append("email", credentials?.email as string);
         formData.append("password", credentials?.password as string);
-
         const res = await api.post("/user/login", formData, {
           headers: { "Content-Type": "application/json" },
         });
+
         const user = await res.data;
 
         // If no error and we have user data, return it

@@ -1,5 +1,4 @@
 "use client";
-import { IFormStatus } from "@/types/status.d";
 import { TextField } from "@mui/material";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,39 +9,37 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useMutationDataStatus } from "@/query/StatusQuery";
+import { useMutationDataPic } from "@/query/PicQuery";
+import { IFormPic } from "@/types/pic";
 
 const schema = yup
   .object({
     id: yup.string(),
     kode: yup.string().required(),
     name: yup.string().required(),
-    description: yup.string().required(),
-    kat_status: yup.number(),
-    companyId: yup.number(),
-    created_at: yup.string(),
+
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
 
-interface PropsFormStatus {
-  dataStatus?: IFormStatus;
+interface IPropsForm {
+  data?: IFormPic;
   handleClose: any;
   isNewRecord: boolean;
   isDone: any;
 }
 
-export const FormStatus = ({
-  dataStatus,
+export const FormData = ({
+  data,
   handleClose,
   isNewRecord,
   isDone,
-}: PropsFormStatus) => {
+}: IPropsForm) => {
   const session = useSession();
 
   //react query
-  const { handleUpdate, handleCreate } = useMutationDataStatus({
+  const { handleUpdate, handleCreate } = useMutationDataPic({
     token: session?.data?.user.token,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -51,10 +48,9 @@ export const FormStatus = ({
   const { handleSubmit, control } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      id: dataStatus?.id,
-      kode: dataStatus?.kode,
-      name: dataStatus?.name,
-      description: dataStatus?.description,
+      id: data?.id,
+      kode: data?.kode,
+      name: data?.name
     },
   });
 
@@ -62,10 +58,8 @@ export const FormStatus = ({
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
     if (isNewRecord) {
-      console.log("ini create");
       await handleCreate(data);
     } else {
-      console.log("ini update");
       await handleUpdate(data);
     }
     setIsLoading(false);
@@ -109,23 +103,6 @@ export const FormStatus = ({
             />
           )}
         />
-        <Controller
-          name="description"
-          control={control}
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Description"
-              error={!!error}
-              size="small"
-              multiline
-              rows={4}
-              variant="outlined"
-              helperText={error ? error.message : null}
-            />
-          )}
-        />
       </DialogContent>
 
       <DialogActions className="mr-4">
@@ -148,25 +125,25 @@ export const FormStatus = ({
   );
 };
 
-interface PropsFormModal {
+interface IPropsFormModal {
   isOpen: boolean;
   onClose: any;
-  status?: IFormStatus;
+  data?: IFormPic;
   isNewRecord: boolean;
 }
 
 export const FormModal = ({
   isOpen,
   onClose,
-  status,
+  data,
   isNewRecord,
-}: PropsFormModal) => {
+}: IPropsFormModal) => {
   return (
     <>
       <Dialog open={isOpen} onClose={onClose} fullWidth>
-        <DialogTitle>Form Update Status</DialogTitle>
-        <FormStatus
-          dataStatus={status}
+        <DialogTitle>Form PIC</DialogTitle>
+        <FormData
+          data={data}
           handleClose={onClose}
           isNewRecord={isNewRecord}
           isDone={onClose}

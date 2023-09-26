@@ -96,6 +96,11 @@ const MenuSidebar = () => {
           </ActiveLink>
         </li>
         <li>
+          <ActiveLink href="/administrator/master/pic">
+            <GrDocumentStore size={12} /> PIC
+          </ActiveLink>
+        </li>
+        <li>
           <ActiveLink href="/master/class">
             <GrDocumentStore size={14} />
             Konfirmasi Aset

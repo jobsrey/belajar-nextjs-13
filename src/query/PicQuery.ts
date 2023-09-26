@@ -1,12 +1,17 @@
 import { useState } from "react";
 import api from "../utils/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { IFormStatus, StatusCollaction } from "@/types/status.d";
+import { IFormPic, PicCollaction } from "@/types/pic";
+import { signOut } from "next-auth/react"
 
-interface SearchStatus {
+
+//IMPORTAN VARIABLE
+const queryNameKey = "collactionDataPic";
+const endPointUrl = '/master/pic';
+
+interface ISearchParams {
   name: string;
   kode: string;
-  description: string;
 }
 
 interface TSortServe {
@@ -18,15 +23,14 @@ interface IProps {
   token: string | undefined;
 }
 
-const queryNameKey = "collactionDataStatus";
 
-export const useQueryDataStatus = ({ token }: IProps) => {
+
+export const useQueryDataPic = ({ token }: IProps) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
-  const [filterField, setFilterField] = useState<SearchStatus>({
+  const [filterField, setFilterField] = useState<ISearchParams>({
     name: "",
     kode: "",
-    description: "",
   });
 
   const [filteredInfo, setFilteredInfo] = useState({});
@@ -41,11 +45,21 @@ export const useQueryDataStatus = ({ token }: IProps) => {
 
   const fetchData = async ({ queryKey }: any) => {
     const params = queryKey[1];
-    const response = await api.get<StatusCollaction>("/master/status", {
-      params,
-      headers: { Authorization: "Bearer " + token },
-    });
-    return response.data;
+
+    try{
+      const response = await api.get<PicCollaction>(endPointUrl, {
+        params,
+        headers: { Authorization: "Bearer " + token },
+      });
+
+  
+      return response.data;
+    }catch(err:any) {
+      if(err.response.status === 401) {
+        signOut();
+      }
+    }
+    
   };
 
   //fungsi useQuery()
@@ -54,6 +68,7 @@ export const useQueryDataStatus = ({ token }: IProps) => {
     queryFn: fetchData,
     keepPreviousData: true,
     meta: {},
+    
   });
 
   return {
@@ -73,22 +88,18 @@ export const useQueryDataStatus = ({ token }: IProps) => {
   };
 };
 
-export const useMutationDataStatus = ({ token }: IProps) => {
+export const useMutationDataPic = ({ token }: IProps) => {
   //query client
   const queryClient = useQueryClient();
 
   //mutation create data
-  const createData = useMutation(async (status: IFormStatus) => {
+  const createData = useMutation(async (data: IFormPic) => {
     const formData = new FormData();
-    // newData?.fileUpload?.fileList?.forEach((file) => {
-    //   formData.append("fileUpload", file.originFileObj);
-    // });
 
-    formData.append("kode", status?.kode as string);
-    formData.append("name", status?.name as string);
-    formData.append("description", status?.description as string);
+    formData.append("kode", data?.kode as string);
+    formData.append("name", data?.name as string);
 
-    await api.post("/master/status", formData, {
+    await api.post(endPointUrl, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: "Bearer " + token,
@@ -97,20 +108,19 @@ export const useMutationDataStatus = ({ token }: IProps) => {
   });
 
   //handle create
-  const handleCreate = async (status: IFormStatus) => {
-    await createData.mutateAsync(status);
+  const handleCreate = async (data: IFormPic) => {
+    await createData.mutateAsync(data);
     queryClient.invalidateQueries([queryNameKey]);
   };
 
-  //mutation update status
-  const updateData = useMutation(async (status: IFormStatus) => {
+  //mutation update data
+  const updateData = useMutation(async (data: IFormPic) => {
     const formData = new FormData();
-    formData.append("kode", status?.kode as string);
-    formData.append("name", status?.name as string);
-    formData.append("description", status?.description as string);
+    formData.append("kode", data?.kode as string);
+    formData.append("name", data?.name as string);
     formData.append("_method", "PATCH");
 
-    await api.post(`/master/status/${status?.id}`, formData, {
+    await api.post(`${endPointUrl}/${data?.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: "Bearer " + token,
@@ -119,17 +129,17 @@ export const useMutationDataStatus = ({ token }: IProps) => {
   });
 
   //handle update
-  const handleUpdate = async (updatedData: IFormStatus) => {
+  const handleUpdate = async (updatedData: IFormPic) => {
     await updateData.mutateAsync(updatedData);
     queryClient.invalidateQueries([queryNameKey]);
   };
 
-  //mutation delete status
+  //mutation delete data
   const deleteData = useMutation(async (id: string) => {
     const formData = new FormData();
     formData.append("_method", "DELETE");
 
-    await api.post(`/master/status/${id}`, formData, {
+    await api.post(`${endPointUrl}/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: "Bearer " + token,

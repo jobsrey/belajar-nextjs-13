@@ -1,6 +1,6 @@
 import ConfirmationDialog from "@/components/dialog/ConfirmationDialog";
-import { useMutationDataStatus } from "@/query/StatusQuery";
-import { Status, StatusCollaction } from "@/types/status.d";
+import { useMutationDataPic } from "@/query/PicQuery";
+import { Pic, PicCollaction } from "@/types/pic";
 import { TextField } from "@mui/material";
 import {
   useReactTable,
@@ -19,9 +19,8 @@ import {
 } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
 
-
-type PTableStatus = {
-  apiResource: StatusCollaction;
+type PTable = {
+  apiResource: PicCollaction;
   page: number;
   setSortDataServe: (value: any) => void;
   setFilterField: (value: any) => void;
@@ -51,41 +50,37 @@ const IndeterminateCheckbox = ({
   );
 };
 
-
-//component
-const TableStatus = ({
+const TablePic = ({
   apiResource,
+  page,
   setSortDataServe,
   setFilterField,
   setPage,
-}: PTableStatus) => {
-  const data = useMemo<Status[]>(() => apiResource.data, [apiResource]);
+}: PTable) => {
+  const data = useMemo<Pic[]>(() => apiResource.data, [apiResource]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const [dataId, setDataId] = useState<string>("");
   const session = useSession();
-
-  const { handleDelete } = useMutationDataStatus({
-    token: session.data?.user.token,
-  });
-
-  const startNumber = apiResource.meta.from ?? 0;
+  const {handleDelete} = useMutationDataPic({ token: session.data?.user.token });
 
   const openDialogDelete = (id: string) => {
     setDataId(id);
     setIsOpenDialog(true);
   };
-  
+
   const closeDialogDelete = () => {
     setIsOpenDialog(false);
   };
 
-  const confirmDeleteData = (callbackId:string) => {
+  const confirmDeleteData = (callbackId: string) => {
     handleDelete(callbackId);
-  }
+  };
 
-  const columns = useMemo<ColumnDef<Status, any>[]>(
+  const startNumber = apiResource.meta.from ?? 0;
+
+  const columns = useMemo<ColumnDef<Pic, any>[]>(
     () => [
       {
         id: "select",
@@ -128,11 +123,6 @@ const TableStatus = ({
         footer: "Name",
       },
       {
-        header: "Description",
-        accessorKey: "description",
-        footer: "Description",
-      },
-      {
         header: "Action",
         accessorKey: "id",
         enableSorting: false,
@@ -141,7 +131,7 @@ const TableStatus = ({
             <div className="flex justify-center items-center">
               <span
                 className="cursor-pointer"
-                onClick={() => openDialogDelete(row.getValue('id'))}
+                onClick={() => openDialogDelete(row.getValue("id"))}
               >
                 <BsTrash />
               </span>
@@ -208,7 +198,7 @@ const TableStatus = ({
                 key={j}
                 scope="col"
                 className={`border-r px-6 py-4 dark:border-neutral-500 `}
-                rowSpan={j < 2 || j === 5 ? 2 : undefined}
+                rowSpan={j < 2 ? 2 : undefined}
               >
                 <span
                   className={`${
@@ -248,14 +238,6 @@ const TableStatus = ({
               onChange={onChangeFilter}
             />
           </td>
-          <td className="whitespace-nowrap border-r px-2 py-2 text-left font-medium dark:border-neutral-500">
-            <TextField
-              name="description"
-              fullWidth
-              size="small"
-              onChange={onChangeFilter}
-            />
-          </td>
         </tr>
         {table.getRowModel().rows.map((row, i) => (
           <tr key={i} className="border-b dark:border-neutral-500">
@@ -282,4 +264,4 @@ const TableStatus = ({
   );
 };
 
-export default TableStatus;
+export default TablePic;

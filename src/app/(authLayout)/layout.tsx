@@ -1,5 +1,6 @@
 import React from "react";
 import "./../globals.css";
+import Image from "next/image";
 
 interface IPropsAuthLayout {
   children: React.ReactNode;
@@ -14,8 +15,12 @@ const AuthLayout = ({ children }: IPropsAuthLayout) => {
             {/* Left column container with background*/}
             <div className="g-6 flex h-full flex-wrap items-center justify-center lg:justify-between">
               <div className="shrink-1 mb-12 grow-0 basis-auto md:mb-0 md:w-9/12 md:shrink-0 lg:w-6/12 xl:w-6/12">
-                <img
+                <Image
                   src="https://tecdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                  width="0"
+                  height="0"  
+                  sizes="100vw"
+                  loading="lazy"
                   className="w-full"
                   alt="Sample image"
                 />
