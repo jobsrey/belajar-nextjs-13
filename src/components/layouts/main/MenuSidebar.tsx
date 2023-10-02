@@ -101,9 +101,15 @@ const MenuSidebar = () => {
           </ActiveLink>
         </li>
         <li>
-          <ActiveLink href="/master/class">
+          <ActiveLink href="/administrator/master/category">
             <GrDocumentStore size={14} />
-            Konfirmasi Aset
+            Kategori
+          </ActiveLink>
+        </li>
+        <li>
+          <ActiveLink href="/administrator/master/cost-center">
+            <GrDocumentStore size={14} />
+            Cost Center
           </ActiveLink>
         </li>
         <li>
@@ -112,6 +118,7 @@ const MenuSidebar = () => {
             Satuan Unit
           </ActiveLink>
         </li>
+        
       </ul>
     </>
   );

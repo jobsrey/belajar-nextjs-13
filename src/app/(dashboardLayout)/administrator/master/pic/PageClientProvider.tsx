@@ -58,7 +58,7 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
     setSortDataServe,
     setFilterField,
     page,
-  } = useQueryDataPic({token:session.user.token});
+  } = useQueryDataPic({ token: session.user.token });
 
   const onPageClick = (page: number) => {
     setPage(page);
@@ -84,14 +84,16 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
 
   return (
     <>
-      <h2>Master Status Page</h2>
+      <div className="flex justify-center items-center py-2">
+        <span className="text-lg font-bold">Master Status Page</span>
+      </div>
       {isLoading && <LoadingComponent />}
 
       {!isLoading && (
         <>
-          <div className="flex items-center p-4">
+          <div className="flex items-center py-4">
             <button
-              className="btn btn-primary"
+              className="btn btn-sm btn-primary"
               type="button"
               onClick={onClickCreate}
             >

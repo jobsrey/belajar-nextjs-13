@@ -63,7 +63,9 @@ const TablePic = ({
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const [dataId, setDataId] = useState<string>("");
   const session = useSession();
-  const {handleDelete} = useMutationDataPic({ token: session.data?.user.token });
+  const { handleDelete } = useMutationDataPic({
+    token: session.data?.user.token,
+  });
 
   const openDialogDelete = (id: string) => {
     setDataId(id);
@@ -162,6 +164,12 @@ const TablePic = ({
     setRowSelection({});
   }, [apiResource]);
 
+  useEffect(() => {
+    table
+      .getSelectedRowModel()
+      .rows.map((value, i) => console.log(value.original.id));
+  }, [rowSelection]);
+
   //search action
   const onChangeFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPage(1);
@@ -198,7 +206,7 @@ const TablePic = ({
                 key={j}
                 scope="col"
                 className={`border-r px-6 py-4 dark:border-neutral-500 `}
-                rowSpan={j < 2 ? 2 : undefined}
+                rowSpan={j < 2 || j == 4 ? 2 : undefined}
               >
                 <span
                   className={`${
@@ -252,6 +260,15 @@ const TablePic = ({
           </tr>
         ))}
       </table>
+      <div className="flex items-center py-2">
+        {table.getSelectedRowModel().rows.length !== 0 && (
+          <>
+            <button type="button" className="btn btn-sm btn-error">
+              Hapus Semua {table.getSelectedRowModel().rows.length}
+            </button>
+          </>
+        )}
+      </div>
       <ConfirmationDialog
         dataId={dataId}
         open={isOpenDialog}
