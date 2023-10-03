@@ -15,7 +15,7 @@ import { FormItem } from "react-hook-form-antd";
 const schema = yup
   .object({
     id: yup.number(),
-    parentId: yup.number().required(),
+    parentId: yup.number(),
     name: yup.string().required(),
     description: yup.string().required("tidak boleh kosong"),
   })
@@ -41,7 +41,7 @@ const FormCategory = () => {
     token: session.data?.user.token,
   });
 
-  const { handleCreateNew, handleUpdateData,categoryNotificationContext } = useMutationTree({
+  const { handleCreateNew, handleUpdateData } = useMutationTree({
     token: session.data?.user.token,
   });
 
@@ -88,10 +88,8 @@ const FormCategory = () => {
   useEffect(() => {
     if (store.selectNode?.id) {
       setIsNewRecord(false);
-      console.log("ini ada");
     } else {
       setIsNewRecord(true);
-      console.log("ini tidak ada");
     }
   }, [store]);
 
@@ -132,14 +130,13 @@ const FormCategory = () => {
       {!showComponentOneSecond && <LoadingForm />}
       {showComponentOneSecond && (
         <Spin spinning={isLoadingForm}>
-          {categoryNotificationContext}
           <Form
             layout="vertical"
             onFinish={handleSubmit(onSubmit)}
             style={{ maxWidth: 600 }}
           >
             <span className="text-lg font-semibold">
-              Form {!isNewRecord ? "Input" : "Update"} Kategori
+              Form {isNewRecord ? "Input" : "Update"} Kategori
             </span>
             <FormItem control={control} label="Name" name="name">
               <Input />

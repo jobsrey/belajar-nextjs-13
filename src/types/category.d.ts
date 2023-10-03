@@ -20,7 +20,7 @@ export interface Category {
 export interface IFormCategory {
   id?: number;
   parent?: number | null;
-  parentId: number | null;
+  parentId?: number | null;
   text?: string;
   description?: string;
   name?:string;

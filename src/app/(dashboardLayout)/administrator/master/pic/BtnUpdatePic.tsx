@@ -1,4 +1,3 @@
-"use client";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -7,7 +6,8 @@ import { useSession } from "next-auth/react";
 import { useMutationDataPic } from "@/query/PicQuery";
 import { FormItem } from "react-hook-form-antd";
 import { Form, Input, Spin, Modal } from "antd";
-import { BsPlusLg } from "react-icons/bs";
+import { IFormPic } from "@/types/pic";
+import { BsPencilSquare } from "react-icons/bs";
 
 const schema = yup
   .object({
@@ -22,26 +22,32 @@ type FormData = yup.InferType<typeof schema>;
 interface IPropsForm {
   onCancel: () => void;
   onSubmit: () => void;
+  initValue: IFormPic;
 }
 
-const FormData = ({ onCancel, onSubmit }: IPropsForm) => {
+const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
   const session = useSession();
 
   //react query
-  const { handleCreate } = useMutationDataPic({
+  const { handleUpdate } = useMutationDataPic({
     token: session?.data?.user.token,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //react form hook
   const { handleSubmit, control } = useForm<FormData>({
+    defaultValues: {
+      name: initValue.name,
+      kode: initValue.kode,
+      id: initValue.id,
+    },
     resolver: yupResolver(schema),
   });
 
   //on submit form
   const eventSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
-    await handleCreate(data);
+    await handleUpdate(data);
     setIsLoading(false);
     onSubmit();
   };
@@ -92,7 +98,11 @@ const FormData = ({ onCancel, onSubmit }: IPropsForm) => {
   );
 };
 
-const BtnCreateNew = () => {
+interface IBtnUPic {
+  data: IFormPic;
+}
+
+const BtnUpdatePic = ({ data }: IBtnUPic) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleOpenModal = () => {
@@ -109,13 +119,9 @@ const BtnCreateNew = () => {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleOpenModal}
-        className="btn btn-sm btn-primary"
-      >
-        <BsPlusLg /> Tambah PIC
-      </button>
+      <span className="cursor-pointer" onClick={handleOpenModal}>
+        <BsPencilSquare />
+      </span>
       <Modal
         title="Basic Modal"
         open={isModalOpen}
@@ -123,10 +129,14 @@ const BtnCreateNew = () => {
         destroyOnClose
         onCancel={handleCloseModal}
       >
-        <FormData onCancel={handleCloseModal} onSubmit={handleOnSubmit} />
+        <FormUpdateData
+          initValue={data}
+          onCancel={handleCloseModal}
+          onSubmit={handleOnSubmit}
+        />
       </Modal>
     </>
   );
 };
 
-export default BtnCreateNew;
+export default BtnUpdatePic;

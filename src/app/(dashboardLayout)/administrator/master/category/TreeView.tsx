@@ -70,44 +70,45 @@ const TreeView = ({ session, collaction }: IProps) => {
 
   return (
     <>
-      <DndProvider backend={MultiBackend} options={getBackendOptions()}>
-        {collaction && (
-          <Tree
-            tree={collaction.data}
-            sort={false}
-            rootId={0}
-            render={(node, options) => (
-              <CustomNode
-                node={node}
-                {...options}
-                isSelected={node.id === store.selectNode?.id}
-                onSelect={handleSelect}
-              />
-            )}
-            dragPreviewRender={(monitorProps) => (
-              <CustomDragPreview monitorProps={monitorProps} />
-            )}
-            onDragEnd={handleDragEnd}
-            onDrop={handleDrop}
-            classes={{
-              root: styles.treeRoot,
-              draggingSource: styles.draggingSource,
-              dropTarget: styles.dropTarget,
-            }}
-          />
-        )}
-
-        {store.selectNode && (
-          <TreeViewActionBtn
-            nodeSelect={store.selectNode}
-            nodeTarget={store.selectNode}
-            onMove={handleBtnMove}
-            session={session}
-            onAdd={handleAddNew}
-            onDelete={handleDelete}
-          />
-        )}
-      </DndProvider>
+      <div className="max-h-[430px] overflow-y-auto">
+        <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+          {collaction && (
+            <Tree
+              tree={collaction.data}
+              sort={false}
+              rootId={0}
+              render={(node, options) => (
+                <CustomNode
+                  node={node}
+                  {...options}
+                  isSelected={node.id === store.selectNode?.id}
+                  onSelect={handleSelect}
+                />
+              )}
+              dragPreviewRender={(monitorProps) => (
+                <CustomDragPreview monitorProps={monitorProps} />
+              )}
+              onDragEnd={handleDragEnd}
+              onDrop={handleDrop}
+              classes={{
+                root: styles.treeRoot,
+                draggingSource: styles.draggingSource,
+                dropTarget: styles.dropTarget,
+              }}
+            />
+          )}
+        </DndProvider>
+      </div>
+      {store.selectNode && (
+        <TreeViewActionBtn
+          nodeSelect={store.selectNode}
+          nodeTarget={store.selectNode}
+          onMove={handleBtnMove}
+          session={session}
+          onAdd={handleAddNew}
+          onDelete={handleDelete}
+        />
+      )}
     </>
   );
 };

@@ -72,8 +72,6 @@ export const useMutationTree = ({ token }: IProps) => {
   //query client
   const queryClient = useQueryClient();
 
-  const [notify, categoryNotificationContext] = notification.useNotification();
-
   //mutation create data
   const moveData = useMutation(async (data: IMoveCategory) => {
     const formData = new FormData();
@@ -82,12 +80,24 @@ export const useMutationTree = ({ token }: IProps) => {
     }
     formData.append("dragSourceId", data?.dragSourceId.toString() as string);
 
-    await api.post(endPointMove, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: "Bearer " + token,
-      },
-    });
+    try {
+      await api.post(endPointMove, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: "Bearer " + token,
+        },
+      });
+      notification.success({
+        message: "Berhasil",
+        description: "Kategori berhasil dipindahkan!",
+      });
+    } catch (_e: any) {
+      let e: Error = _e; // error under useUnknownInCatchVariables
+      notification.error({
+        message: "Error",
+        description: e.message,
+      });
+    }
   });
 
   //handle create
@@ -99,9 +109,6 @@ export const useMutationTree = ({ token }: IProps) => {
 
   const moveDataWithLeftArrow = useMutation(async (data: IMoveCategory) => {
     const formData = new FormData();
-    if (data?.dropTargetId) {
-      formData.append("dropTargetId", data.dropTargetId.toString() as string);
-    }
     formData.append("dragSourceId", data?.dragSourceId.toString() as string);
 
     try {
@@ -112,14 +119,13 @@ export const useMutationTree = ({ token }: IProps) => {
         },
       });
 
-      notify.success({
+      notification.success({
         message: "Berhasil",
         description: "Kategori berhasil dipindahkan!",
       });
-
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
-      notify.error({
+      notification.error({
         message: "Error",
         description: e.message,
       });
@@ -136,7 +142,9 @@ export const useMutationTree = ({ token }: IProps) => {
     const formData = new FormData();
     formData.append("name", data.name as string);
     formData.append("description", data.description as string);
-    formData.append("parentId", data.parentId?.toString() as string);
+    if (data.parentId) {
+      formData.append("parentId", data.parentId?.toString() as string);
+    }
 
     try {
       await api.post(endPointUrl, formData, {
@@ -145,13 +153,13 @@ export const useMutationTree = ({ token }: IProps) => {
           Authorization: "Bearer " + token,
         },
       });
-      notify.success({
+      notification.success({
         message: "Berhasil",
         description: "Kategori berhasil tersimpan!",
       });
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
-      notify.error({
+      notification.error({
         message: "Error",
         description: e.message,
       });
@@ -178,13 +186,13 @@ export const useMutationTree = ({ token }: IProps) => {
           Authorization: "Bearer " + token,
         },
       });
-      notify.success({
+      notification.success({
         message: "Berhasil",
         description: "Kategori berhasil tersimpan!",
       });
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
-      notify.error({
+      notification.error({
         message: "Error",
         description: e.message,
       });
@@ -208,13 +216,13 @@ export const useMutationTree = ({ token }: IProps) => {
           Authorization: "Bearer " + token,
         },
       });
-      notify.success({
+      notification.success({
         message: "Berhasil",
         description: "Kategori berhasil terhapus!",
       });
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
-      notify.error({
+      notification.error({
         message: "Error",
         description: e.message,
       });
@@ -233,7 +241,6 @@ export const useMutationTree = ({ token }: IProps) => {
     handleUpdateData,
     handleDeleteData,
     handleMoveWithArrow,
-    categoryNotificationContext,
     // handleMoveWithCursorBtn,
   };
 };

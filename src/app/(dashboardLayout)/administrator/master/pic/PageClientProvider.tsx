@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { Session } from "next-auth";
 import { IFormPic, PicCollaction } from "@/types/pic";
-import { useQueryDataPic } from "@/query/PicQuery";
+import { useMutationDataPic, useQueryDataPic } from "@/query/PicQuery";
 import { BiPlus } from "react-icons/bi";
-import { FormModal } from "./FormModal";
+import BtnCreateNew from "./FormModal";
 import TablePic from "./TablePic";
 
 interface PropsPagination {
@@ -47,10 +47,6 @@ type PPropsPic = {
 };
 
 const PageStatusProvider = ({ session }: PPropsPic) => {
-  const [dataUpdate, setDataUpdate] = useState<IFormPic>();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isNewRecord, setIsNewRecord] = useState<boolean>(false);
-
   const {
     data: collaction,
     setPage,
@@ -72,16 +68,6 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
     );
   };
 
-  const onCloseModalHandle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const onClickCreate = () => {
-    setDataUpdate({});
-    setIsNewRecord(true);
-    setIsOpen(true);
-  };
-
   return (
     <>
       <div className="flex justify-center items-center py-2">
@@ -92,15 +78,7 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
       {!isLoading && (
         <>
           <div className="flex items-center py-4">
-            <button
-              className="btn btn-sm btn-primary"
-              type="button"
-              onClick={onClickCreate}
-            >
-              {" "}
-              <BiPlus size={14} />
-              Tambah PIC
-            </button>
+            <BtnCreateNew />
           </div>
 
           {collaction && (
@@ -114,13 +92,6 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
           )}
         </>
       )}
-
-      <FormModal
-        isOpen={isOpen}
-        onClose={onCloseModalHandle}
-        data={dataUpdate}
-        isNewRecord={isNewRecord}
-      />
       <Pagination collaction={collaction} onPageClick={onPageClick} />
     </>
   );

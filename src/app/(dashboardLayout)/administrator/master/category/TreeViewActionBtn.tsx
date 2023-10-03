@@ -20,7 +20,7 @@ interface IProps {
 const TreeViewActionBtn = ({ session, onAdd, nodeSelect }: IProps) => {
   const [selectBtn, setSelectBtn] = useState<string | null>();
 
-  const { handleMoveWithArrow, categoryNotificationContext } = useMutationTree({
+  const { handleMoveWithArrow } = useMutationTree({
     token: session.user.token,
   });
 
@@ -54,7 +54,6 @@ const TreeViewActionBtn = ({ session, onAdd, nodeSelect }: IProps) => {
 
   return (
     <div className="flex justify-center items-center p-2 gap-2">
-      {categoryNotificationContext}
       <button
         className="btn btn-sm btn-circle"
         title="Tambah Kategori Baru"

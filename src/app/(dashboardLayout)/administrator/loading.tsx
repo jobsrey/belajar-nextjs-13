@@ -1,6 +1,6 @@
 const LoadingComponent = () => {
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <div className="flex items-center justify-center min-h-[400px]">
       <span className="loading loading-spinner text-info h-16 w-16"></span>
     </div>
   );

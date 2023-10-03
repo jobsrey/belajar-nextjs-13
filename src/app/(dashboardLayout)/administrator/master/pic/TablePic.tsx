@@ -1,4 +1,5 @@
 import ConfirmationDialog from "@/components/dialog/ConfirmationDialog";
+import IndeterminateCheckbox from "@/components/table/checkbox/IndeterminateCheckbox";
 import { useMutationDataPic } from "@/query/PicQuery";
 import { Pic, PicCollaction } from "@/types/pic";
 import { TextField } from "@mui/material";
@@ -11,13 +12,14 @@ import {
 } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useSession } from "next-auth/react";
-import React, { useEffect, useMemo, useState, HTMLProps } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   AiOutlineSortAscending,
   AiOutlineSortDescending,
 } from "react-icons/ai";
-import { BsTrash } from "react-icons/bs";
+import { BtnBulkDelete, ContainerBtnBulk } from "./BtnBulkTable";
+import TableColumnAction from "./TableColumnAction";
 
 type PTable = {
   apiResource: PicCollaction;
@@ -27,32 +29,8 @@ type PTable = {
   setPage: (value: any) => void;
 };
 
-const IndeterminateCheckbox = ({
-  indeterminate,
-  className = "",
-  ...rest
-}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) => {
-  const ref = React.useRef<HTMLInputElement>(null!);
-
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate, rest.checked]);
-
-  return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className={className + " cursor-pointer"}
-      {...rest}
-    />
-  );
-};
-
 const TablePic = ({
   apiResource,
-  page,
   setSortDataServe,
   setFilterField,
   setPage,
@@ -129,16 +107,7 @@ const TablePic = ({
         accessorKey: "id",
         enableSorting: false,
         cell: ({ row }) => {
-          return (
-            <div className="flex justify-center items-center">
-              <span
-                className="cursor-pointer"
-                onClick={() => openDialogDelete(row.getValue("id"))}
-              >
-                <BsTrash />
-              </span>
-            </div>
-          );
+          return <TableColumnAction row={row} />;
         },
       },
     ],
@@ -163,12 +132,6 @@ const TablePic = ({
   useEffect(() => {
     setRowSelection({});
   }, [apiResource]);
-
-  useEffect(() => {
-    table
-      .getSelectedRowModel()
-      .rows.map((value, i) => console.log(value.original.id));
-  }, [rowSelection]);
 
   //search action
   const onChangeFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,7 +211,12 @@ const TablePic = ({
           </td>
         </tr>
         {table.getRowModel().rows.map((row, i) => (
-          <tr key={i} className="border-b dark:border-neutral-500">
+          <tr
+            key={i}
+            className={`border-b dark:border-neutral-500 ${
+              row.getIsSelected() && "bg-red-200"
+            }`}
+          >
             {row.getVisibleCells().map((cell, j) => (
               <td
                 key={j}
@@ -260,15 +228,12 @@ const TablePic = ({
           </tr>
         ))}
       </table>
-      <div className="flex items-center py-2">
-        {table.getSelectedRowModel().rows.length !== 0 && (
-          <>
-            <button type="button" className="btn btn-sm btn-error">
-              Hapus Semua {table.getSelectedRowModel().rows.length}
-            </button>
-          </>
-        )}
-      </div>
+      {/* btn hapus */}
+      {table.getSelectedRowModel().rows.length !== 0 && (
+        <ContainerBtnBulk>
+          <BtnBulkDelete rowsData={table.getSelectedRowModel()} />
+        </ContainerBtnBulk>
+      )}
       <ConfirmationDialog
         dataId={dataId}
         open={isOpenDialog}
