@@ -1,46 +1,9 @@
 "use client";
-import { useState } from "react";
 import { Session } from "next-auth";
-import { IFormPic, PicCollaction } from "@/types/pic";
-import { useMutationDataPic, useQueryDataPic } from "@/query/PicQuery";
-import { BiPlus } from "react-icons/bi";
+import {  useQueryDataPic } from "@/query/PicQuery";
 import BtnCreateNew from "./FormModal";
 import TablePic from "./TablePic";
-
-interface PropsPagination {
-  collaction: PicCollaction | undefined;
-  onPageClick: any;
-}
-
-const Pagination = ({ collaction, onPageClick }: PropsPagination) => {
-  const removeQuote = (label: string) => {
-    return label.replace("&laquo;", "").replace("&raquo;", "");
-  };
-
-  const onMovePage = (url: any) => {
-    if (url !== null) {
-      const searchParams = new URL(url);
-      const pageNumber = searchParams.searchParams.get("page");
-      if (pageNumber !== null && !isNaN(Number(pageNumber))) {
-        onPageClick(Number(pageNumber));
-      }
-    }
-  };
-
-  return (
-    <div className="join p-2 flex justify-center items-center">
-      {collaction?.meta.links.map((value, i) => (
-        <button
-          key={i}
-          className={`join-item btn ${value.active ? "btn-active" : ""}`}
-          onClick={() => onMovePage(value.url)}
-        >
-          {removeQuote(value.label)}
-        </button>
-      ))}
-    </div>
-  );
-};
+import PaginationCollaction from "@/components/table/pagination/PaginationCollaction";
 
 type PPropsPic = {
   session: Session;
@@ -92,7 +55,7 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
           )}
         </>
       )}
-      <Pagination collaction={collaction} onPageClick={onPageClick} />
+      <PaginationCollaction collaction={collaction} onPageClick={onPageClick} />
     </>
   );
 };

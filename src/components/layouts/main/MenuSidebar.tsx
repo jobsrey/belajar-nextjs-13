@@ -118,7 +118,12 @@ const MenuSidebar = () => {
             Satuan Unit
           </ActiveLink>
         </li>
-        
+        <li>
+          <ActiveLink href="/administrator/master/class">
+            <GrDocumentStore size={14} />
+            Kelas
+          </ActiveLink>
+        </li>
       </ul>
     </>
   );

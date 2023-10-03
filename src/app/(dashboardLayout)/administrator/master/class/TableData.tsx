@@ -1,61 +1,86 @@
-import ConfirmationDialog from "@/components/dialog/ConfirmationDialog";
-import IndeterminateCheckbox from "@/components/table/checkbox/IndeterminateCheckbox";
-import { useMutationDataPic } from "@/query/PicQuery";
-import { Pic, PicCollaction } from "@/types/pic";
-import { TextField } from "@mui/material";
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
+  IFormMasterClassType,
+  IMasterClassCollactionType,
+  IMasterClassType,
+} from "@/types/MasterAsset";
+import {
+  ColumnDef,
   SortingState,
   flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import type { ColumnDef } from "@tanstack/react-table";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import React, { useEffect, useMemo, useState } from "react";
-
+import TableColumnAction from "./TableColumnAction";
+import IndeterminateCheckbox from "@/components/table/checkbox/IndeterminateCheckbox";
 import {
   AiOutlineSortAscending,
   AiOutlineSortDescending,
 } from "react-icons/ai";
+import TableFilter from "./TableFilter";
 import { BtnBulkDelete, ContainerBtnBulk } from "./BtnBulkTable";
-import TableColumnAction from "./TableColumnAction";
 
 type PTable = {
-  apiResource: PicCollaction;
+  apiResource: IMasterClassCollactionType;
   page: number;
   setSortDataServe: (value: any) => void;
   setFilterField: (value: any) => void;
   setPage: (value: any) => void;
+  session: Session;
 };
 
-const TablePic = ({
+const TableData = ({
   apiResource,
-  setSortDataServe,
+  page,
+  session,
   setFilterField,
+  setSortDataServe,
   setPage,
 }: PTable) => {
-  const data = useMemo<Pic[]>(() => apiResource.data, [apiResource]);
+  const data = useMemo<IMasterClassType[]>(
+    () => apiResource.data,
+    [apiResource]
+  );
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const [dataId, setDataId] = useState<string>("");
-  const session = useSession();
-  const { handleDelete } = useMutationDataPic({
-    token: session.data?.user.token,
-  });
+  // const { handleDelete } = useMutationDataPic({
+  //   token: session.user.token,
+  // });
 
-  const closeDialogDelete = () => {
-    setIsOpenDialog(false);
-  };
+  // const closeDialogDelete = () => {
+  //   setIsOpenDialog(false);
+  // };
 
-  const confirmDeleteData = (callbackId: string) => {
-    handleDelete(callbackId);
-  };
+  // const confirmDeleteData = (callbackId: string) => {
+  //   handleDelete(callbackId);
+  // };
+
+  //sorting effect
+  useEffect(() => {
+    if (sorting.length) {
+      sorting.map((s) =>
+        setSortDataServe({
+          sortColumnName: s.id,
+          sortDirection: s.desc ? "desc" : "asc",
+        })
+      );
+    } else {
+      setSortDataServe({});
+    }
+  }, [sorting, setSortDataServe]);
+
+  //selection effect ketika pindah pagination
+  useEffect(() => {
+    setRowSelection({});
+  }, [apiResource]);
 
   const startNumber = apiResource.meta.from ?? 0;
 
-  const columns = useMemo<ColumnDef<Pic, any>[]>(
+  const columns = useMemo<ColumnDef<IMasterClassType, any>[]>(
     () => [
       {
         id: "select",
@@ -98,8 +123,12 @@ const TablePic = ({
         footer: "Name",
       },
       {
+        header: "Description",
+        accessorKey: "description",
+      },
+      {
         header: "Action",
-        accessorKey: "id",
+        accessorKey: "actionColumn",
         enableSorting: false,
         cell: ({ row }) => {
           return <TableColumnAction row={row} />;
@@ -108,25 +137,6 @@ const TablePic = ({
     ],
     [startNumber]
   );
-
-  //sorting effect
-  useEffect(() => {
-    if (sorting.length) {
-      sorting.map((s) =>
-        setSortDataServe({
-          sortColumnName: s.id,
-          sortDirection: s.desc ? "desc" : "asc",
-        })
-      );
-    } else {
-      setSortDataServe({});
-    }
-  }, [sorting, setSortDataServe]);
-
-  //selection effect ketika pindah pagination
-  useEffect(() => {
-    setRowSelection({});
-  }, [apiResource]);
 
   //search action
   const onChangeFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,7 +150,7 @@ const TablePic = ({
   };
 
   //core of table
-  const table = useReactTable({
+  const tableInstance = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -154,24 +164,25 @@ const TablePic = ({
     manualSorting: true,
     enableRowSelection: true,
   });
+
   return (
     <>
       <table className="min-w-full border text-center text-sm font-light dark:border-neutral-500">
-        {table.getHeaderGroups().map((headerGroup, i) => (
+        {tableInstance.getHeaderGroups().map((headerGroup, i) => (
           <tr key={i} className="border-b font-medium dark:border-neutral-500">
             {headerGroup.headers.map((header, j) => (
               <td
                 key={j}
                 scope="col"
-                className={`border-r px-6 py-4 dark:border-neutral-500 `}
-                rowSpan={j < 2 || j == 4 ? 2 : undefined}
+                className={`border-r px-6 py-2 dark:border-neutral-500`}
+                rowSpan={j < 2 || j == 5 ? 2 : undefined}
               >
                 <span
                   className={`${
                     header.column.getCanSort()
                       ? "cursor-pointer select-none "
                       : ""
-                  } flex items-center text-blue-600 text-base`}
+                  } flex items-center text-blue-600 text-sm`}
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(
@@ -187,25 +198,8 @@ const TablePic = ({
             ))}
           </tr>
         ))}
-        <tr className="border-b dark:border-neutral-500">
-          <td className="whitespace-nowrap border-r px-2 py-2 text-left font-medium dark:border-neutral-500">
-            <TextField
-              name="kode"
-              fullWidth
-              size="small"
-              onChange={onChangeFilter}
-            />
-          </td>
-          <td className="whitespace-nowrap border-r px-2 py-2 text-left font-medium dark:border-neutral-500">
-            <TextField
-              name="name"
-              fullWidth
-              size="small"
-              onChange={onChangeFilter}
-            />
-          </td>
-        </tr>
-        {table.getRowModel().rows.map((row, i) => (
+        <TableFilter onChangeFilter={onChangeFilter} />
+        {tableInstance.getRowModel().rows.map((row, i) => (
           <tr
             key={i}
             className={`border-b dark:border-neutral-500 ${
@@ -223,22 +217,14 @@ const TablePic = ({
           </tr>
         ))}
       </table>
-      {/* btn hapus */}
-      {table.getSelectedRowModel().rows.length !== 0 && (
+       {/* btn hapus */}
+       {tableInstance.getSelectedRowModel().rows.length !== 0 && (
         <ContainerBtnBulk>
-          <BtnBulkDelete rowsData={table.getSelectedRowModel()} />
+          <BtnBulkDelete rowsData={tableInstance.getSelectedRowModel()} />
         </ContainerBtnBulk>
       )}
-      <ConfirmationDialog
-        dataId={dataId}
-        open={isOpenDialog}
-        title="Apakah anda yakin"
-        message="Apakah anda yakin ingin menghapus data ini?"
-        onClose={closeDialogDelete}
-        onConfirmation={confirmDeleteData}
-      />
     </>
   );
 };
 
-export default TablePic;
+export default TableData;
