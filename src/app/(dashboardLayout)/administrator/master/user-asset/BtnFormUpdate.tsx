@@ -1,59 +1,63 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useMutationDataMasterUserAsset } from "@/query/MasterUserAsset";
+import { IFormMasterUserAsset } from "@/types/MasterUserAsset";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useState } from "react";
+import { Form, Input, Modal, Spin } from "antd";
 import { useSession } from "next-auth/react";
-import { useMutationDataPic } from "@/query/PicQuery";
+import React, { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { FormItem } from "react-hook-form-antd";
-import { Form, Input, Spin, Modal } from "antd";
-import { IFormPic } from "@/types/MasterPic";
 import { BsPencilSquare } from "react-icons/bs";
+import * as yup from "yup";
 
 const schema = yup
   .object({
     id: yup.string(),
     kode: yup.string().required(),
     name: yup.string().required(),
+    description: yup.string(),
+    email: yup.string().email().required(),
   })
   .required();
 
-type FormData = yup.InferType<typeof schema>;
+type TFormData = yup.InferType<typeof schema>;
 
-interface IPropsForm {
-  onCancel: () => void;
-  onSubmit: () => void;
-  initValue: IFormPic;
+interface IFormDefault {
+  data: IFormMasterUserAsset;
 }
 
-const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
+interface IPropsFormUpdate {
+  initValue: IFormMasterUserAsset;
+  onCancel: () => void;
+  onSubmit: () => void;
+}
+
+const FormUpdate = ({ initValue, onCancel, onSubmit }: IPropsFormUpdate) => {
   const session = useSession();
 
-  //react query
-  const { handleUpdate } = useMutationDataPic({
-    token: session?.data?.user.token,
-  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const { handleUpdate } = useMutationDataMasterUserAsset({
+    token: session.data?.user.token,
+  });
+
   //react form hook
-  const { handleSubmit, control } = useForm<FormData>({
+  const { handleSubmit, control } = useForm<TFormData>({
     defaultValues: {
       name: initValue.name,
       kode: initValue.kode,
       id: initValue.id,
+      description: initValue.description,
+      email: initValue.email,
     },
     resolver: yupResolver(schema),
   });
 
   //on submit form
-  const eventSubmit: SubmitHandler<FormData> = async (data) => {
+  const eventSubmit: SubmitHandler<TFormData> = async (data) => {
     setIsLoading(true);
     await handleUpdate(data);
     setIsLoading(false);
     onSubmit();
-  };
-
-  const handleCancel = () => {
-    onCancel();
   };
 
   return (
@@ -63,21 +67,28 @@ const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
         onFinish={handleSubmit(eventSubmit)}
         style={{ maxWidth: 600 }}
       >
-        <FormItem control={control} label="Name" name="name">
-          <Input />
-        </FormItem>
-
         <FormItem control={control} label="Kode" name="kode">
           <Input />
         </FormItem>
 
+        <FormItem control={control} label="Name" name="name">
+          <Input />
+        </FormItem>
+
+        <FormItem control={control} label="Email" name="email">
+          <Input />
+        </FormItem>
+
+        <FormItem control={control} label="Deskripsi" name="description">
+          <Input />
+        </FormItem>
         <div className="flex items-center gap-4 justify-end">
           <button
             className={`btn btn-sm btn-error`}
             type="button"
             title="Pindah"
             name="move"
-            onClick={handleCancel}
+            onClick={onCancel}
           >
             BATAL
           </button>
@@ -98,45 +109,41 @@ const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
   );
 };
 
-interface IBtnUPic {
-  data: IFormPic;
-}
+const BtnFormUpdate = ({ data }: IFormDefault) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-const BtnUpdatePic = ({ data }: IBtnUPic) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpen = () => {
+    setIsOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCancel = () => {
+    setIsOpen(false);
   };
 
-  const handleOnSubmit = () => {
-    setIsModalOpen(false);
+  const handleSubmit = () => {
+    setIsOpen(false);
   };
 
   return (
     <>
-      <span className="cursor-pointer" onClick={handleOpenModal}>
+      <span className="cursor-pointer" onClick={handleOpen}>
         <BsPencilSquare />
       </span>
       <Modal
-        title="Basic Modal"
-        open={isModalOpen}
+        title="Ubah data master kelas Aset"
+        open={isOpen}
         footer={null}
         destroyOnClose
-        onCancel={handleCloseModal}
+        onCancel={handleCancel}
       >
-        <FormUpdateData
+        <FormUpdate
           initValue={data}
-          onCancel={handleCloseModal}
-          onSubmit={handleOnSubmit}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
         />
       </Modal>
     </>
   );
 };
 
-export default BtnUpdatePic;
+export default BtnFormUpdate;

@@ -1,19 +1,21 @@
-import { Pic } from "@/types/MasterPic";
 import { RowModel } from "@tanstack/react-table";
 import { Modal } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { useMutationDataPic } from "@/query/PicQuery";
 import { useSession } from "next-auth/react";
+import { IFormMasterUserAsset } from "@/types/MasterUserAsset";
+import { useMutationDataMasterUserAsset } from "@/query/MasterUserAsset";
 
 const { confirm } = Modal;
 
-interface IProps {  
-  rowsData: RowModel<Pic>;
+interface IProps {
+  rowsData: RowModel<IFormMasterUserAsset>;
 }
 
 export const BtnBulkDelete = ({ rowsData }: IProps) => {
   const session = useSession();
-  const {handleBulkDelete} = useMutationDataPic({ token: session.data?.user.token });
+  const { handleBulkDelete } = useMutationDataMasterUserAsset({
+    token: session.data?.user.token,
+  });
 
   const showConfirm = () => {
     confirm({
@@ -29,9 +31,8 @@ export const BtnBulkDelete = ({ rowsData }: IProps) => {
 
   const prosesDeleteData = async () => {
     let listData: string[] = [];
-    rowsData.rows.map((v, i) => listData.push(v.original.id));
-    await handleBulkDelete({listId:listData});
-
+    rowsData.rows.map((v, i) => listData.push(v.original.id as string));
+    await handleBulkDelete({ listId: listData });
   };
 
   return (

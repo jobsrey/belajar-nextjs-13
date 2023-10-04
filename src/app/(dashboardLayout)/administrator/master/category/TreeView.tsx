@@ -12,7 +12,7 @@ import styles from "./TreeView.module.css";
 import { DragSourceMonitor } from "react-dnd";
 import { Session } from "next-auth";
 import { useMutationTree } from "@/query/CategoryQuery";
-import { CategoryCollaction, ICustomModelNode } from "@/types/category";
+import { CategoryCollaction, ICustomModelNode } from "@/types/MasterCategory";
 import TreeViewActionBtn from "./TreeViewActionBtn";
 import useTreeHookContext, {
   ITypeContext,

@@ -1,6 +1,6 @@
 import ConfirmationDialog from "@/components/dialog/ConfirmationDialog";
 import { useMutationDataStatus } from "@/query/StatusQuery";
-import { Status, StatusCollaction } from "@/types/status.d";
+import { Status, StatusCollaction } from "@/types/MasterStatus";
 import { TextField } from "@mui/material";
 import {
   useReactTable,

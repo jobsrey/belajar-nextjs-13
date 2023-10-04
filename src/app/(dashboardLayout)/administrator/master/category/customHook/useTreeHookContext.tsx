@@ -1,4 +1,4 @@
-import { ICustomModelNode } from "@/types/category";
+import { ICustomModelNode } from "@/types/MasterCategory";
 import { createContext, useContext, useState } from "react";
 
 export interface ITypeContext {

@@ -1,10 +1,4 @@
 import {
-  IFormMasterClassType,
-  IMasterClassCollactionType,
-  IMasterClassType,
-} from "@/types/MasterAsset";
-import {
-  ColumnDef,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -13,17 +7,21 @@ import {
 } from "@tanstack/react-table";
 import { Session } from "next-auth";
 import React, { useEffect, useMemo, useState } from "react";
-import TableColumnAction from "./TableColumnAction";
-import IndeterminateCheckbox from "@/components/table/checkbox/IndeterminateCheckbox";
+
 import {
   AiOutlineSortAscending,
   AiOutlineSortDescending,
 } from "react-icons/ai";
 import TableFilter from "./TableFilter";
 import { BtnBulkDelete, ContainerBtnBulk } from "./BtnBulkTable";
+import { useTableColumnHook } from "./TableColumn";
+import {
+  IMasterUserAsset,
+  IMasterUserAssetCollaction,
+} from "@/types/MasterUserAsset";
 
 type PTable = {
-  apiResource: IMasterClassCollactionType;
+  apiResource: IMasterUserAssetCollaction;
   page: number;
   setSortDataServe: (value: any) => void;
   setFilterField: (value: any) => void;
@@ -39,7 +37,7 @@ const TableData = ({
   setSortDataServe,
   setPage,
 }: PTable) => {
-  const data = useMemo<IMasterClassType[]>(
+  const data = useMemo<IMasterUserAsset[]>(
     () => apiResource.data,
     [apiResource]
   );
@@ -67,63 +65,7 @@ const TableData = ({
 
   const startNumber = apiResource.meta.from ?? 0;
 
-  const columns = useMemo<ColumnDef<IMasterClassType, any>[]>(
-    () => [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <IndeterminateCheckbox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }}
-          />
-        ),
-        cell: ({ row }) => (
-          <div className="px-1">
-            <IndeterminateCheckbox
-              {...{
-                checked: row.getIsSelected(),
-                disabled: !row.getCanSelect(),
-                indeterminate: row.getIsSomeSelected(),
-                onChange: row.getToggleSelectedHandler(),
-              }}
-            />
-          </div>
-        ),
-      },
-      {
-        header: "#",
-        accessorKey: "serialNumber",
-        cell: ({ row }) => row.index + startNumber,
-        enableSorting: false,
-      },
-      {
-        header: "Kode",
-        accessorKey: "kode",
-        footer: "Kode",
-      },
-      {
-        header: "Name",
-        accessorKey: "name",
-        footer: "Name",
-      },
-      {
-        header: "Description",
-        accessorKey: "description",
-      },
-      {
-        header: "Action",
-        accessorKey: "actionColumn",
-        enableSorting: false,
-        cell: ({ row }) => {
-          return <TableColumnAction row={row} />;
-        },
-      },
-    ],
-    [startNumber]
-  );
+  const { columns } = useTableColumnHook({ startNumber });
 
   //search action
   const onChangeFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,15 +96,16 @@ const TableData = ({
 
   return (
     <>
-      <table className="min-w-full border text-center text-sm font-light dark:border-neutral-500">
+      <table className="w-full border text-center text-sm font-light dark:border-neutral-500">
         {tableInstance.getHeaderGroups().map((headerGroup, i) => (
           <tr key={i} className="border-b font-medium dark:border-neutral-500">
             {headerGroup.headers.map((header, j) => (
               <td
                 key={j}
+                
                 scope="col"
                 className={`border-r px-6 py-2 dark:border-neutral-500`}
-                rowSpan={j < 2 || j == 5 ? 2 : undefined}
+                rowSpan={j < 2 || j == 6 ? 2 : undefined}
               >
                 <span
                   className={`${
@@ -196,7 +139,7 @@ const TableData = ({
             {row.getVisibleCells().map((cell, j) => (
               <td
                 key={j}
-                className="whitespace-nowrap border-r px-2 py-2 text-left font-medium dark:border-neutral-500"
+                className="break-words border-r px-2 py-2 text-left font-medium dark:border-neutral-500"
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
@@ -204,8 +147,8 @@ const TableData = ({
           </tr>
         ))}
       </table>
-       {/* btn hapus */}
-       {tableInstance.getSelectedRowModel().rows.length !== 0 && (
+      {/* btn hapus */}
+      {tableInstance.getSelectedRowModel().rows.length !== 0 && (
         <ContainerBtnBulk>
           <BtnBulkDelete rowsData={tableInstance.getSelectedRowModel()} />
         </ContainerBtnBulk>

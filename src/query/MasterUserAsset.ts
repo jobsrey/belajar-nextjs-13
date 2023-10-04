@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { IFormPic, PicCollaction } from "@/types/MasterPic";
+
 import { signOut } from "next-auth/react";
 import useDebounce from "@/hooks/useDebounce";
 import { notification } from "antd";
+import { IFormMasterUserAsset, IMasterUserAssetCollaction } from "@/types/MasterUserAsset";
 
 //IMPORTAN VARIABLE
-const queryNameKey = "collactionDataPic";
-const endPointUrl = "/master/pic";
+const queryNameKey = "collactionDataMasterUserAsset";
+const endPointUrl = "/master/user-asset";
 
 interface ISearchParams {
   name: string;
   kode: string;
+  description: string;
+  email:string;
 }
 
 interface TSortServe {
@@ -24,7 +27,7 @@ interface IProps {
   token: string | undefined;
 }
 
-export const useQueryDataPic = ({ token }: IProps) => {
+export const useQueryDataMasterUserAsset = ({ token }: IProps) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [filteredInfo, setFilteredInfo] = useState({});
@@ -37,6 +40,8 @@ export const useQueryDataPic = ({ token }: IProps) => {
   const [filterField, setFilterField] = useState<ISearchParams>({
     name: "",
     kode: "",
+    description: "",
+    email: "",
   });
 
   useDebounce(
@@ -78,7 +83,7 @@ export const useQueryDataPic = ({ token }: IProps) => {
     const params = queryKey[1];
 
     try {
-      const response = await api.get<PicCollaction>(endPointUrl, {
+      const response = await api.get<IMasterUserAssetCollaction>(endPointUrl, {
         params,
         headers: { Authorization: "Bearer " + token },
       });
@@ -120,16 +125,18 @@ interface IBulkDelete {
   listId: string[];
 }
 
-export const useMutationDataPic = ({ token }: IProps) => {
+export const useMutationDataMasterUserAsset = ({ token }: IProps) => {
   //query client
   const queryClient = useQueryClient();
 
   //mutation create data
-  const createData = useMutation(async (data: IFormPic) => {
+  const createData = useMutation(async (data: IFormMasterUserAsset) => {
     const formData = new FormData();
 
     formData.append("kode", data?.kode as string);
     formData.append("name", data?.name as string);
+    formData.append("email", data?.email as string);
+    formData.append("description", data.description as string);
 
     try {
       await api.post(endPointUrl, formData, {
@@ -141,9 +148,8 @@ export const useMutationDataPic = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Pic baru berhasil disimpan!",
+        description: "Kelas baru berhasil disimpan!",
       });
-
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
       notification.error({
@@ -151,23 +157,24 @@ export const useMutationDataPic = ({ token }: IProps) => {
         description: e.message,
       });
     }
-    
   });
 
   //handle create
-  const handleCreate = async (data: IFormPic) => {
+  const handleCreate = async (data: IFormMasterUserAsset) => {
     await createData.mutateAsync(data);
     queryClient.invalidateQueries([queryNameKey]);
   };
 
   //mutation update data
-  const updateData = useMutation(async (data: IFormPic) => {
+  const updateData = useMutation(async (data: IFormMasterUserAsset) => {
     const formData = new FormData();
     formData.append("kode", data?.kode as string);
     formData.append("name", data?.name as string);
+    formData.append("email", data?.email as string);
+    formData.append("description", data.description as string);
     formData.append("_method", "PATCH");
 
-    try{
+    try {
       await api.post(`${endPointUrl}/${data?.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -177,9 +184,8 @@ export const useMutationDataPic = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Pic berhasil diubah!",
+        description: "Kelas berhasil diubah!",
       });
-
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
       notification.error({
@@ -187,11 +193,10 @@ export const useMutationDataPic = ({ token }: IProps) => {
         description: e.message,
       });
     }
-   
   });
 
   //handle update
-  const handleUpdate = async (updatedData: IFormPic) => {
+  const handleUpdate = async (updatedData: IFormMasterUserAsset) => {
     await updateData.mutateAsync(updatedData);
     queryClient.invalidateQueries([queryNameKey]);
   };
@@ -200,7 +205,6 @@ export const useMutationDataPic = ({ token }: IProps) => {
   const deleteData = useMutation(async (id: string) => {
     const formData = new FormData();
     formData.append("_method", "DELETE");
-
 
     try {
       await api.post(`${endPointUrl}/${id}`, formData, {
@@ -212,9 +216,8 @@ export const useMutationDataPic = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Pic berhasil dihapus!",
+        description: "Kelas berhasil dihapus!",
       });
-
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
       notification.error({
@@ -222,7 +225,6 @@ export const useMutationDataPic = ({ token }: IProps) => {
         description: e.message,
       });
     }
-  
   });
 
   //handle delete
@@ -231,7 +233,7 @@ export const useMutationDataPic = ({ token }: IProps) => {
     queryClient.invalidateQueries([queryNameKey]);
   };
 
-  const bulkDeleteAction = useMutation(async ({listId}: IBulkDelete) => {
+  const bulkDeleteAction = useMutation(async ({ listId }: IBulkDelete) => {
     const formData = new FormData();
     formData.append("listId", JSON.stringify(listId));
     formData.append("_method", "DELETE");
@@ -245,9 +247,8 @@ export const useMutationDataPic = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Pic berhasil dihapus!",
+        description: "Kelas berhasil dihapus!",
       });
-
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
       notification.error({
@@ -257,10 +258,10 @@ export const useMutationDataPic = ({ token }: IProps) => {
     }
   });
 
-  const handleBulkDelete = async ({listId}:IBulkDelete) => {
-    await bulkDeleteAction.mutateAsync({listId});
+  const handleBulkDelete = async ({ listId }: IBulkDelete) => {
+    await bulkDeleteAction.mutateAsync({ listId });
     queryClient.invalidateQueries([queryNameKey]);
-  }
+  };
 
   return {
     handleCreate,

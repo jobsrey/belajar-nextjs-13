@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../utils/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { IFormStatus, StatusCollaction } from "@/types/status.d";
+import { IFormStatus, StatusCollaction } from "@/types/MasterStatus";
 
 interface SearchStatus {
   name: string;

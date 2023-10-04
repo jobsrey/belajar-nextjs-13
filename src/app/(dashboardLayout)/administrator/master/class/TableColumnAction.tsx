@@ -1,7 +1,7 @@
 import { IMasterClassType } from "@/types/MasterAsset";
 import { Row } from "@tanstack/react-table";
 import React from "react";
-import { BsPencilSquare, BsTrash3 } from "react-icons/bs";
+import { BsTrash3 } from "react-icons/bs";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal } from "antd";
 import { useMutationDataMasterClass } from "@/query/MasterClassQuery";

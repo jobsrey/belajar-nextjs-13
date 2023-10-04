@@ -1,53 +1,48 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useMutationDataMasterUserAsset } from "@/query/MasterUserAsset";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useState } from "react";
+import { Form, Input, Modal, Spin } from "antd";
 import { useSession } from "next-auth/react";
-import { useMutationDataPic } from "@/query/PicQuery";
+import { useState } from "react";
+import { SubmitHandler, set, useForm } from "react-hook-form";
 import { FormItem } from "react-hook-form-antd";
-import { Form, Input, Spin, Modal } from "antd";
-import { IFormPic } from "@/types/MasterPic";
-import { BsPencilSquare } from "react-icons/bs";
+import { BsPlusLg } from "react-icons/bs";
+import * as yup from "yup";
 
 const schema = yup
   .object({
     id: yup.string(),
     kode: yup.string().required(),
     name: yup.string().required(),
+    email: yup.string().email().required(),
+    description: yup.string(),
   })
   .required();
 
-type FormData = yup.InferType<typeof schema>;
+type TFormData = yup.InferType<typeof schema>;
 
 interface IPropsForm {
   onCancel: () => void;
   onSubmit: () => void;
-  initValue: IFormPic;
 }
 
-const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
+const FormCreate = ({ onSubmit, onCancel }: IPropsForm) => {
   const session = useSession();
 
   //react query
-  const { handleUpdate } = useMutationDataPic({
+  const { handleCreate } = useMutationDataMasterUserAsset({
     token: session?.data?.user.token,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //react form hook
-  const { handleSubmit, control } = useForm<FormData>({
-    defaultValues: {
-      name: initValue.name,
-      kode: initValue.kode,
-      id: initValue.id,
-    },
+  const { handleSubmit, control } = useForm<TFormData>({
     resolver: yupResolver(schema),
   });
 
   //on submit form
-  const eventSubmit: SubmitHandler<FormData> = async (data) => {
+  const eventSubmit: SubmitHandler<TFormData> = async (data) => {
     setIsLoading(true);
-    await handleUpdate(data);
+    await handleCreate(data);
     setIsLoading(false);
     onSubmit();
   };
@@ -68,6 +63,14 @@ const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
         </FormItem>
 
         <FormItem control={control} label="Kode" name="kode">
+          <Input />
+        </FormItem>
+
+        <FormItem control={control} label="Email" name="email">
+          <Input />
+        </FormItem>
+
+        <FormItem control={control} label="Description" name="description">
           <Input />
         </FormItem>
 
@@ -98,45 +101,40 @@ const FormUpdateData = ({ onCancel, onSubmit, initValue }: IPropsForm) => {
   );
 };
 
-interface IBtnUPic {
-  data: IFormPic;
-}
-
-const BtnUpdatePic = ({ data }: IBtnUPic) => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+const BtnFormCreate = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const handleOpenModal = () => {
-    setIsModalOpen(true);
+    setIsOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCancel = () => {
+    setIsOpen(false);
   };
 
-  const handleOnSubmit = () => {
-    setIsModalOpen(false);
+  const handleSubmitForm = () => {
+    setIsOpen(false);
   };
 
   return (
     <>
-      <span className="cursor-pointer" onClick={handleOpenModal}>
-        <BsPencilSquare />
-      </span>
+      <button
+        type="button"
+        onClick={handleOpenModal}
+        className="btn btn-sm btn-primary"
+      >
+        <BsPlusLg /> Tambah User Aset
+      </button>
       <Modal
-        title="Basic Modal"
-        open={isModalOpen}
+        title="Tambah Data User Aset"
+        open={isOpen}
         footer={null}
         destroyOnClose
-        onCancel={handleCloseModal}
+        onCancel={handleCancel}
       >
-        <FormUpdateData
-          initValue={data}
-          onCancel={handleCloseModal}
-          onSubmit={handleOnSubmit}
-        />
+        <FormCreate onCancel={handleCancel} onSubmit={handleSubmitForm} />
       </Modal>
     </>
   );
 };
 
-export default BtnUpdatePic;
+export default BtnFormCreate;

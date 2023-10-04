@@ -1,15 +1,14 @@
-import { Pic } from "@/types/pic";
 import { RowModel } from "@tanstack/react-table";
 import { Modal } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { useMutationDataPic } from "@/query/PicQuery";
 import { useSession } from "next-auth/react";
 import { useMutationDataMasterClass } from "@/query/MasterClassQuery";
+import { IMasterClassType } from "@/types/MasterAsset";
 
 const { confirm } = Modal;
 
 interface IProps {  
-  rowsData: RowModel<Pic>;
+  rowsData: RowModel<IMasterClassType>;
 }
 
 export const BtnBulkDelete = ({ rowsData }: IProps) => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../utils/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CategoryCollaction, IFormCategory } from "@/types/category";
+import { CategoryCollaction, IFormCategory } from "@/types/MasterCategory";
 import { signOut } from "next-auth/react";
 import { notification } from "antd";
 
@@ -19,6 +19,7 @@ interface IProps {
   token: string | undefined;
 }
 
+//custom hook fetch data collaction category
 export const useQueryDataCategory = ({ token }: IProps) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
@@ -68,6 +69,8 @@ export interface IMoveCategory {
   dragSourceId: number;
 }
 
+
+//custom hook for mutation category tree
 export const useMutationTree = ({ token }: IProps) => {
   //query client
   const queryClient = useQueryClient();
@@ -107,6 +110,7 @@ export const useMutationTree = ({ token }: IProps) => {
     queryClient.invalidateQueries(["collactionDataCategoryTreeInput"]);
   };
 
+  //mutation move tree with arrow
   const moveDataWithLeftArrow = useMutation(async (data: IMoveCategory) => {
     const formData = new FormData();
     formData.append("dragSourceId", data?.dragSourceId.toString() as string);
@@ -132,12 +136,14 @@ export const useMutationTree = ({ token }: IProps) => {
     }
   });
 
+  //handle move tree data with arrow
   const handleMoveWithArrow = async (data: IMoveCategory) => {
     await moveDataWithLeftArrow.mutateAsync(data);
     queryClient.invalidateQueries([queryNameKey]);
     queryClient.invalidateQueries(["collactionDataCategoryTreeInput"]);
   };
 
+  //mutation create new data
   const createNewData = useMutation(async (data: IFormCategory) => {
     const formData = new FormData();
     formData.append("name", data.name as string);
@@ -166,17 +172,21 @@ export const useMutationTree = ({ token }: IProps) => {
     }
   });
 
+  //handle create new data
   const handleCreateNew = async (data: IFormCategory) => {
     await createNewData.mutateAsync(data);
     queryClient.invalidateQueries([queryNameKey]);
     queryClient.invalidateQueries(["collactionDataCategoryTreeInput"]);
   };
 
+  //mutation update data
   const updateDataKategori = useMutation(async (data: IFormCategory) => {
     const formData = new FormData();
     formData.append("name", data.name as string);
     formData.append("description", data.description as string);
-    formData.append("parentId", data.parentId?.toString() as string);
+    if (data.parentId) {
+      formData.append("parentId", data.parentId.toString() as string);
+    }
     formData.append("_method", "PATCH");
 
     try {
@@ -199,12 +209,14 @@ export const useMutationTree = ({ token }: IProps) => {
     }
   });
 
+  //handle update data
   const handleUpdateData = async (data: IFormCategory) => {
     await updateDataKategori.mutateAsync(data);
     queryClient.invalidateQueries([queryNameKey]);
     queryClient.invalidateQueries(["collactionDataCategoryTreeInput"]);
   };
 
+  //mutation delete data by one
   const deleteData = useMutation(async (data: IFormCategory) => {
     const formData = new FormData();
     formData.append("_method", "DELETE");
@@ -229,6 +241,7 @@ export const useMutationTree = ({ token }: IProps) => {
     }
   });
 
+  //handle delete data by one
   const handleDeleteData = async (data: IFormCategory) => {
     await deleteData.mutateAsync(data);
     queryClient.invalidateQueries([queryNameKey]);
@@ -241,11 +254,13 @@ export const useMutationTree = ({ token }: IProps) => {
     handleUpdateData,
     handleDeleteData,
     handleMoveWithArrow,
-    // handleMoveWithCursorBtn,
   };
 };
 
+//fungsi untuk mengambil data tree pada input ant treeSelect
 export const useQueryListDataTeeInput = ({ token }: IProps) => {
+
+  //process fetch api
   const fetchData = async () => {
     try {
       const response = await api.get<CategoryCollaction>(

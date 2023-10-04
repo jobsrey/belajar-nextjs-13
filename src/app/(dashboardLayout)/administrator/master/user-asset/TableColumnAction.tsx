@@ -1,29 +1,30 @@
-import { Pic } from "@/types/MasterPic";
 import { Row } from "@tanstack/react-table";
-import BtnUpdatePic from "./BtnUpdatePic";
-import { BsTrash } from "react-icons/bs";
-import { Modal } from "antd";
+import React from "react";
+import { BsTrash3 } from "react-icons/bs";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { useMutationDataPic } from "@/query/PicQuery";
+import { Modal } from "antd";
 import { useSession } from "next-auth/react";
+import BtnFormUpdate from "./BtnFormUpdate";
+import { IMasterUserAsset } from "@/types/MasterUserAsset";
+import { useMutationDataMasterUserAsset } from "@/query/MasterUserAsset";
 
 const { confirm } = Modal;
 
 interface IProps {
-  row: Row<Pic>;
+  row: Row<IMasterUserAsset>;
 }
 
-interface IPropsBtnDelete {
+interface IPropsBtn {
   id: string;
 }
 
-const BtnDeletePic = ({ id }: IPropsBtnDelete) => {
+const BtnDelete = ({ id }: IPropsBtn) => {
   const session = useSession();
-  const { handleDelete } = useMutationDataPic({
+  const { handleDelete } = useMutationDataMasterUserAsset({
     token: session.data?.user.token,
   });
 
-  const actionDelete = () => {
+  const confirmation = () => {
     confirm({
       title: "Apakah anda yakin?",
       icon: <ExclamationCircleFilled />,
@@ -40,8 +41,8 @@ const BtnDeletePic = ({ id }: IPropsBtnDelete) => {
   };
 
   return (
-    <span className="cursor-pointer" onClick={actionDelete}>
-      <BsTrash />
+    <span className="cursor-pointer" onClick={confirmation}>
+      <BsTrash3 />
     </span>
   );
 };
@@ -49,8 +50,8 @@ const BtnDeletePic = ({ id }: IPropsBtnDelete) => {
 const TableColumnAction = ({ row }: IProps) => {
   return (
     <div className="flex justify-center items-center gap-2">
-      <BtnDeletePic id={row.original.id} />
-      <BtnUpdatePic data={row.original} />
+      <BtnFormUpdate data={row.original} />
+      <BtnDelete id={row.original.id} />
     </div>
   );
 };

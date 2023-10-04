@@ -1,7 +1,7 @@
 import ConfirmationDialog from "@/components/dialog/ConfirmationDialog";
 import IndeterminateCheckbox from "@/components/table/checkbox/IndeterminateCheckbox";
 import { useMutationDataPic } from "@/query/PicQuery";
-import { Pic, PicCollaction } from "@/types/pic";
+import { Pic, PicCollaction } from "@/types/MasterPic";
 import { TextField } from "@mui/material";
 import {
   useReactTable,

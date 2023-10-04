@@ -1,6 +1,6 @@
 "use client";
 import { Session } from "next-auth";
-import {  useQueryDataPic } from "@/query/PicQuery";
+import { useQueryDataPic } from "@/query/PicQuery";
 import BtnCreateNew from "./FormModal";
 import TablePic from "./TablePic";
 import PaginationCollaction from "@/components/table/pagination/PaginationCollaction";
@@ -25,7 +25,7 @@ const PageStatusProvider = ({ session }: PPropsPic) => {
 
   const LoadingComponent = () => {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center min-h-[300px]">
         <span className="loading loading-spinner text-info h-16 w-16"></span>
       </div>
     );

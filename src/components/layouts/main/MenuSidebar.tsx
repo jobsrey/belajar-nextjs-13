@@ -7,6 +7,118 @@ import { AiFillTags } from "react-icons/ai";
 import { SlCursorMove } from "react-icons/sl";
 import { GrDocumentStore } from "react-icons/gr";
 
+const MenuTransaction = () => {
+  return (
+    <li>
+      <details>
+        <summary>
+          <AiFillTags size={14} />
+          Transaksi
+        </summary>
+        <ul>
+          {/* <li>
+            <h3 className="menu-title">Transaksi</h3>
+          </li> */}
+          <li>
+            <ActiveLink href="/transaction/mutation">
+              <SlCursorMove size={14} />
+              Perpindahan
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink href="/transaction/disposal">
+              <SlCursorMove size={14} />
+              Penghapusan Aset
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink href="/transaction/reverse">
+              <SlCursorMove size={14} />
+              Pembatalan Penghapusan Aset
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink href="/transaction/audit">
+              <SlCursorMove size={14} />
+              Stock Opname
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink href="/transaction/changeasset">
+              <SlCursorMove size={14} />
+              Perubahan Aset
+            </ActiveLink>
+          </li>
+          <li>
+            <ActiveLink href="/transaction/add-new-asset">
+              <SlCursorMove size={14} />
+              Penambahan Aset
+            </ActiveLink>
+          </li>
+        </ul>
+      </details>
+    </li>
+  );
+};
+
+const MenuMaster = () => {
+  return (
+    <>
+      <li>
+        {/* <h3 className="menu-title">Master Data</h3> */}
+        <details>
+          <summary>
+            <AiFillTags size={14} />
+            Master Data
+          </summary>
+          <ul>
+            <li>
+              <ActiveLink href="/administrator/master/status">
+                <GrDocumentStore size={12} /> Status
+              </ActiveLink>
+            </li>
+            <li>
+              <ActiveLink href="/administrator/master/pic">
+                <GrDocumentStore size={12} /> PIC
+              </ActiveLink>
+            </li>
+            <li>
+              <ActiveLink href="/administrator/master/user-asset">
+                <GrDocumentStore size={14} />
+                User Aset
+              </ActiveLink>
+            </li>
+            <li>
+              <ActiveLink href="/administrator/master/category">
+                <GrDocumentStore size={14} />
+                Kategori
+              </ActiveLink>
+            </li>
+            <li>
+              <ActiveLink href="/administrator/master/cost-center">
+                <GrDocumentStore size={14} />
+                Cost Center
+              </ActiveLink>
+            </li>
+            <li>
+              <ActiveLink href="/administrator/master/uom">
+                <GrDocumentStore size={14} />
+                Satuan Unit
+              </ActiveLink>
+            </li>
+            <li>
+              <ActiveLink href="/administrator/master/class">
+                <GrDocumentStore size={14} />
+                Kelas
+              </ActiveLink>
+            </li>
+          </ul>
+        </details>
+      </li>
+    </>
+  );
+};
+
 const MenuSidebar = () => {
   return (
     <>
@@ -48,82 +160,8 @@ const MenuSidebar = () => {
             Scan QR
           </ActiveLink>
         </li>
-        <li>
-          <h3 className="menu-title">Transaksi</h3>
-        </li>
-        <li>
-          <ActiveLink href="/transaction/mutation">
-            <SlCursorMove size={14} />
-            Perpindahan
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/transaction/disposal">
-            <SlCursorMove size={14} />
-            Penghapusan Aset
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/transaction/reverse">
-            <SlCursorMove size={14} />
-            Pembatalan Penghapusan Aset
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/transaction/audit">
-            <SlCursorMove size={14} />
-            Stock Opname
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/transaction/changeasset">
-            <SlCursorMove size={14} />
-            Perubahan Aset
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/transaction/add-new-asset">
-            <SlCursorMove size={14} />
-            Penambahan Aset
-          </ActiveLink>
-        </li>
-        <li>
-          <h3 className="menu-title">Master Data</h3>
-        </li>
-        <li>
-          <ActiveLink href="/administrator/master/status">
-            <GrDocumentStore size={12} /> Status
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/administrator/master/pic">
-            <GrDocumentStore size={12} /> PIC
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/administrator/master/category">
-            <GrDocumentStore size={14} />
-            Kategori
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/administrator/master/cost-center">
-            <GrDocumentStore size={14} />
-            Cost Center
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/master/uom">
-            <GrDocumentStore size={14} />
-            Satuan Unit
-          </ActiveLink>
-        </li>
-        <li>
-          <ActiveLink href="/administrator/master/class">
-            <GrDocumentStore size={14} />
-            Kelas
-          </ActiveLink>
-        </li>
+        <MenuTransaction/>
+        <MenuMaster />
       </ul>
     </>
   );

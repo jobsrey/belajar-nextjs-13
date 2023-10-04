@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useQueryDataStatus } from "@/query/StatusQuery";
-import { IFormStatus, StatusCollaction } from "@/types/status.d";
+import { IFormStatus, StatusCollaction } from "@/types/MasterStatus";
 import { FormModal } from "./FormModal";
 import { BiPlus } from "react-icons/bi";
 import TableStatus from "./TableStatus";

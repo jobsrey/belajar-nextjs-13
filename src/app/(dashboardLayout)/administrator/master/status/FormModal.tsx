@@ -1,5 +1,5 @@
 "use client";
-import { IFormStatus } from "@/types/status.d";
+import { IFormStatus } from "@/types/MasterStatus";
 import { TextField } from "@mui/material";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
