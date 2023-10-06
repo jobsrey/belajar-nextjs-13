@@ -94,6 +94,11 @@ const MenuMaster = () => {
       label: "Kategori",
     },
     {
+      href: "/administrator/master/location",
+      icon: <GrDocumentStore size={12} />,
+      label: "Lokasi",
+    },
+    {
       href: "/administrator/master/cost-center",
       icon: <GrDocumentStore size={12} />,
       label: "Cost Center",

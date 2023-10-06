@@ -2,7 +2,7 @@
 
 import { Session } from "next-auth";
 import TableData from "./TableData";
-import PaginationCollaction from "@/components/table/pagination/PaginationCollaction";
+  import PaginationCollaction from "@/components/table/pagination/PaginationCollaction";
 import BtnFormCreate from "./BtnFormCreate";
 import { useQueryDataMasterUom } from "@/query/MasterUomQuery";
 
