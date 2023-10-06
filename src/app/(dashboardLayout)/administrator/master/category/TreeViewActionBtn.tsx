@@ -7,6 +7,7 @@ import { RxCross2 } from "react-icons/rx";
 import { Session } from "next-auth";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useMutationTree } from "@/query/CategoryQuery";
+import BtnDeleteNode from "./BtnDeleteNode";
 
 interface IProps {
   nodeSelect: NodeModel | null;
@@ -71,14 +72,8 @@ const TreeViewActionBtn = ({ session, onAdd, nodeSelect }: IProps) => {
         </button>
       )}
 
-      <button
-        className="btn btn-sm btn-circle"
-        type="button"
-        title="Hapus Kategori"
-        onClick={handleDelete}
-      >
-        <BsTrash />
-      </button>
+      <BtnDeleteNode/>
+      
     </div>
   );
 };

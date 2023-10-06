@@ -7,7 +7,46 @@ import { AiFillTags } from "react-icons/ai";
 import { SlCursorMove } from "react-icons/sl";
 import { GrDocumentStore } from "react-icons/gr";
 
+interface IMenuObject {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+}
+
 const MenuTransaction = () => {
+  const listMenu: IMenuObject[] = [
+    {
+      href: "/transaction/mutation",
+      icon: <SlCursorMove size={14} />,
+      label: "Perpindahan",
+    },
+    {
+      href: "/transaction/disposal",
+      icon: <SlCursorMove size={14} />,
+      label: "Penghapusan Aset",
+    },
+    {
+      href: "/transaction/reverse",
+      icon: <SlCursorMove size={14} />,
+      label: "Pembatalan Penghapusan Aset",
+    },
+    {
+      href: "/transaction/audit",
+      icon: <SlCursorMove size={14} />,
+      label: "Stock Opname",
+    },
+    {
+      href: "/transaction/changeasset",
+      icon: <SlCursorMove size={14} />,
+      label: "Perubahan Aset",
+    },
+    {
+      href: "/transaction/add-new-asset",
+      icon: <SlCursorMove size={14} />,
+      label: "Penambahan Aset",
+    },
+  ];
+
   return (
     <li>
       <details>
@@ -16,45 +55,16 @@ const MenuTransaction = () => {
           Transaksi
         </summary>
         <ul>
-          {/* <li>
-            <h3 className="menu-title">Transaksi</h3>
-          </li> */}
           <li>
-            <ActiveLink href="/transaction/mutation">
-              <SlCursorMove size={14} />
-              Perpindahan
-            </ActiveLink>
+            <h3 className="menu-title">List Transaksi</h3>
           </li>
-          <li>
-            <ActiveLink href="/transaction/disposal">
-              <SlCursorMove size={14} />
-              Penghapusan Aset
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/transaction/reverse">
-              <SlCursorMove size={14} />
-              Pembatalan Penghapusan Aset
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/transaction/audit">
-              <SlCursorMove size={14} />
-              Stock Opname
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/transaction/changeasset">
-              <SlCursorMove size={14} />
-              Perubahan Aset
-            </ActiveLink>
-          </li>
-          <li>
-            <ActiveLink href="/transaction/add-new-asset">
-              <SlCursorMove size={14} />
-              Penambahan Aset
-            </ActiveLink>
-          </li>
+          {listMenu.map((v, i) => (
+            <li key={i}>
+              <ActiveLink href={v.href}>
+                {v.icon} {v.label}
+              </ActiveLink>
+            </li>
+          ))}
         </ul>
       </details>
     </li>
@@ -62,6 +72,43 @@ const MenuTransaction = () => {
 };
 
 const MenuMaster = () => {
+  const listMenu: IMenuObject[] = [
+    {
+      href: "/administrator/master/status",
+      icon: <GrDocumentStore size={12} />,
+      label: "Status",
+    },
+    {
+      href: "/administrator/master/pic",
+      icon: <GrDocumentStore size={12} />,
+      label: "PIC",
+    },
+    {
+      href: "/administrator/master/user-asset",
+      icon: <GrDocumentStore size={12} />,
+      label: "User Aset",
+    },
+    {
+      href: "/administrator/master/category",
+      icon: <GrDocumentStore size={12} />,
+      label: "Kategori",
+    },
+    {
+      href: "/administrator/master/cost-center",
+      icon: <GrDocumentStore size={12} />,
+      label: "Cost Center",
+    },
+    {
+      href: "/administrator/master/uom",
+      icon: <GrDocumentStore size={12} />,
+      label: "Satuan Unit",
+    },
+    {
+      href: "/administrator/master/class",
+      icon: <GrDocumentStore size={12} />,
+      label: "Kelas",
+    },
+  ];
   return (
     <>
       <li>
@@ -72,46 +119,14 @@ const MenuMaster = () => {
             Master Data
           </summary>
           <ul>
-            <li>
-              <ActiveLink href="/administrator/master/status">
-                <GrDocumentStore size={12} /> Status
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink href="/administrator/master/pic">
-                <GrDocumentStore size={12} /> PIC
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink href="/administrator/master/user-asset">
-                <GrDocumentStore size={14} />
-                User Aset
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink href="/administrator/master/category">
-                <GrDocumentStore size={14} />
-                Kategori
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink href="/administrator/master/cost-center">
-                <GrDocumentStore size={14} />
-                Cost Center
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink href="/administrator/master/uom">
-                <GrDocumentStore size={14} />
-                Satuan Unit
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink href="/administrator/master/class">
-                <GrDocumentStore size={14} />
-                Kelas
-              </ActiveLink>
-            </li>
+            {listMenu.map((v, i) => (
+              <li key={i}>
+                <ActiveLink href={v.href}>
+                  {v.icon}
+                  {v.label}
+                </ActiveLink>
+              </li>
+            ))}
           </ul>
         </details>
       </li>
@@ -160,7 +175,7 @@ const MenuSidebar = () => {
             Scan QR
           </ActiveLink>
         </li>
-        <MenuTransaction/>
+        <MenuTransaction />
         <MenuMaster />
       </ul>
     </>

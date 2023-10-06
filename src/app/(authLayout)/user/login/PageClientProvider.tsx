@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Backdrop, CircularProgress, TextField } from "@mui/material";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,6 +20,8 @@ const PageLoginClientProvider = () => {
   const router = useRouter();
   const [showLoading, setLoading] = useState<boolean>(false);
   const [errorServer, setErrorServer] = useState<string | null | undefined>(null);
+  const session = useSession();
+
 
   //react form hook
   const { handleSubmit, control } = useForm<FormData>({
