@@ -1,10 +1,10 @@
-export interface StatusCollaction {
-  data: Status[];
+export interface IStatusCollaction {
+  data: IStatus[];
   links: Links;
   meta: Meta;
 }
 
-export interface Status {
+export interface IStatus {
   id: string;
   kode: string;
   name: string;
@@ -48,4 +48,6 @@ export interface IFormStatus{
   kat_status?: number | undefined;
   companyId?: number | undefined;
   created_at?: string | undefined;
+  updated_at?: string | undefined;
+  deleted_at?: any | undefined;
 }
