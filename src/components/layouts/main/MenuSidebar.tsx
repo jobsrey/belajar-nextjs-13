@@ -104,6 +104,11 @@ const MenuMaster = () => {
       label: "Cost Center",
     },
     {
+      href: "/administrator/master/currency",
+      icon: <GrDocumentStore size={12} />,
+      label: "Mata Uang",
+    },
+    {
       href: "/administrator/master/uom",
       icon: <GrDocumentStore size={12} />,
       label: "Satuan Unit",
