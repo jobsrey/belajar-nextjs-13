@@ -1,7 +1,8 @@
 import { useMutationDataMasterStatus } from "@/query/MasterStatusQuery";
-import { IFormStatus } from "@/types/MasterStatus";
+import { IFormStatus, IStatusErrorBody } from "@/types/MasterStatus";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Form, Input, Modal, Spin } from "antd";
+import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -40,7 +41,7 @@ const FormUpdate = ({ initValue, onCancel, onSubmit }: IPropsFormUpdate) => {
   });
 
   //react form hook
-  const { handleSubmit, control } = useForm<TFormData>({
+  const { handleSubmit, control,setError } = useForm<TFormData>({
     defaultValues: {
       kode: initValue.kode,
       name: initValue.name,
@@ -53,11 +54,24 @@ const FormUpdate = ({ initValue, onCancel, onSubmit }: IPropsFormUpdate) => {
   //on submit form
   const eventSubmit: SubmitHandler<TFormData> = async (data) => {
     setIsLoading(true);
-    await handleUpdate(data);
+    await handleUpdate(data,{
+      onError: (error:any) => {
+        onErrorSubmitData(error)
+      }
+    });
     setIsLoading(false);
     onSubmit();
   };
 
+  const onErrorSubmitData = (error: AxiosError<IStatusErrorBody>) => {
+    const itemsError = error.response?.data.errors;
+    if (itemsError) {
+      itemsError.name?.map((v: string, i) => setError("name", { message: v }));
+      itemsError.kode?.map((v: string, i) => setError("kode", { message: v }));
+    }
+    setIsLoading(false);
+  };
+  
   return (
     <Spin spinning={isLoading}>
       <Form

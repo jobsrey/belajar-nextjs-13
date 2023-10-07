@@ -1,9 +1,11 @@
 import { useMutationDataMasterStatus } from "@/query/MasterStatusQuery";
+import { IStatusErrorBody } from "@/types/MasterStatus";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Form, Input, Modal, Spin } from "antd";
+import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { SubmitHandler, set, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { FormItem } from "react-hook-form-antd";
 import { BsPlusLg } from "react-icons/bs";
 import * as yup from "yup";
@@ -11,8 +13,8 @@ import * as yup from "yup";
 const schema = yup
   .object({
     id: yup.string(),
-    kode: yup.string().required(),
-    name: yup.string().required(),
+    kode: yup.string(),
+    name: yup.string().required('Nama status tidak boleh kosong'),
     description: yup.string(),
   })
   .required();
@@ -34,16 +36,32 @@ const FormCreate = ({ onSubmit, onCancel }: IPropsForm) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //react form hook
-  const { handleSubmit, control } = useForm<TFormData>({
+  const { handleSubmit, control, setError } = useForm<TFormData>({
     resolver: yupResolver(schema),
   });
 
   //on submit form
   const eventSubmit: SubmitHandler<TFormData> = async (data) => {
     setIsLoading(true);
-    await handleCreate(data);
+    await handleCreate(data, {
+      onError: (error: any) => {
+        onErrorSubmitData(error);
+      },
+      onSuccess: () => {
+        console.log("on success");
+      },
+    });
     setIsLoading(false);
     onSubmit();
+  };
+
+  const onErrorSubmitData = (error: AxiosError<IStatusErrorBody>) => {
+    const itemsError = error.response?.data.errors;
+    if (itemsError) {
+      itemsError.name?.map((v: string, i) => setError("name", { message: v }));
+      itemsError.kode?.map((v: string, i) => setError("kode", { message: v }));
+    }
+    setIsLoading(false);
   };
 
   const handleCancel = () => {

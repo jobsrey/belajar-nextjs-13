@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  MutateOptions,
+} from "@tanstack/react-query";
 
 import { signOut } from "next-auth/react";
 import useDebounce from "@/hooks/useDebounce";
 import { notification } from "antd";
 import { IFormStatus, IStatusCollaction } from "@/types/MasterStatus";
+import { AxiosError } from "axios";
 
 //IMPORTAN VARIABLE
 const queryNameKey = "collactionDataMasterStatus";
@@ -15,7 +21,7 @@ interface ISearchParams {
   name: string;
   kode: string;
   description: string;
-  email:string;
+  email: string;
 }
 
 interface TSortServe {
@@ -134,44 +140,45 @@ export const useMutationDataMasterStatus = ({ token }: IProps) => {
     const formData = new FormData();
 
     formData.append("kode", data?.kode as string);
-    formData.append("name", data?.name as string);
-    formData.append("description", data.description as string);
-    formData.append("kat_status", '1');
-
-    try {
-      await api.post(endPointUrl, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: "Bearer " + token,
-        },
-      });
-
-      notification.success({
-        message: "Berhasil",
-        description: "Status baru berhasil disimpan!",
-      });
-    } catch (_e: any) {
-      let e: Error = _e; // error under useUnknownInCatchVariables
-      notification.error({
-        message: "Error",
-        description: e.message,
-      });
+    if (data?.name) {
+      formData.append("name", data?.name as string);
     }
+    formData.append("description", data.description as string);
+    formData.append("kat_status", "1");
+
+    await api.post(endPointUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    notification.success({
+      message: "Berhasil",
+      description: "Status baru berhasil disimpan!",
+    });
   });
 
   //handle create
-  const handleCreate = async (data: IFormStatus) => {
-    await createData.mutateAsync(data);
+  const handleCreate = async (
+    data: IFormStatus,
+    options?: MutateOptions<void, unknown, IFormStatus, unknown> | undefined
+  ) => {
+    await createData.mutateAsync(data, options);
     queryClient.invalidateQueries([queryNameKey]);
   };
 
   //mutation update data
   const updateData = useMutation(async (data: IFormStatus) => {
     const formData = new FormData();
-    formData.append("kode", data?.kode as string);
-    formData.append("name", data?.name as string);
+    if (data?.kode) {
+      formData.append("kode", data?.kode as string);
+    }
+    if (data?.name) {
+      formData.append("name", data?.name as string);
+    }
     formData.append("description", data.description as string);
-    formData.append("kat_status", '1');
+    formData.append("kat_status", "1");
     formData.append("_method", "PATCH");
 
     try {
@@ -196,8 +203,11 @@ export const useMutationDataMasterStatus = ({ token }: IProps) => {
   });
 
   //handle update
-  const handleUpdate = async (updatedData: IFormStatus) => {
-    await updateData.mutateAsync(updatedData);
+  const handleUpdate = async (
+    updatedData: IFormStatus,
+    options?: MutateOptions<void, unknown, IFormStatus, unknown> | undefined
+  ) => {
+    await updateData.mutateAsync(updatedData, options);
     queryClient.invalidateQueries([queryNameKey]);
   };
 

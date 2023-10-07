@@ -40,7 +40,7 @@ export interface Link {
   active: boolean;
 }
 
-export interface IFormStatus{
+export interface IFormStatus {
   id?: string;
   kode?: string;
   name?: string;
@@ -50,4 +50,26 @@ export interface IFormStatus{
   created_at?: string | undefined;
   updated_at?: string | undefined;
   deleted_at?: any | undefined;
+}
+
+export interface IStatusErrorBody {
+  message: string;
+  errors: IDetailError;
+}
+
+export interface IDetailError {
+  name?: string[];
+  id?: string[];
+  kode?: string[];
+  description?: string[];
+}
+
+export interface IStatusOnErrorMutation<
+  TData,
+  TVariables = undefined,
+  TContext = undefined
+> {
+  error: AxiosError<TData>;
+  variables: TVariables;
+  context: TContext | undefined;
 }
