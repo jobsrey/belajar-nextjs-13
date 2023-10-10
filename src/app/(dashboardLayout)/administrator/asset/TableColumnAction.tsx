@@ -1,17 +1,17 @@
-import { IMasterClassType } from "@/types/Asset";
 import { Row } from "@tanstack/react-table";
 import React from "react";
 import { BsTrash3 } from "react-icons/bs";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal } from "antd";
-import { useMutationDataMasterClass } from "@/query/MasterClassQuery";
 import { useSession } from "next-auth/react";
 import BtnFormUpdate from "./BtnFormUpdate";
+import { IAsset } from "@/types/Asset";
+import { useMutationDataAsset } from "@/query/AssetQuery";
 
 const { confirm } = Modal;
 
 interface IProps {
-  row: Row<IMasterClassType>;
+  row: Row<IAsset>;
 }
 
 interface IPropsBtn {
@@ -20,7 +20,7 @@ interface IPropsBtn {
 
 const BtnDelete = ({ id }: IPropsBtn) => {
   const session = useSession();
-  const { handleDelete } = useMutationDataMasterClass({
+  const { handleDelete } = useMutationDataAsset({
     token: session.data?.user.token,
   });
 

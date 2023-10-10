@@ -1,17 +1,17 @@
-import { IMasterClassType } from "@/types/Asset";
 import { Row } from "@tanstack/react-table";
 import React from "react";
 import { BsTrash3 } from "react-icons/bs";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal } from "antd";
-import { useMutationDataMasterClass } from "@/query/MasterClassQuery";
 import { useSession } from "next-auth/react";
 import BtnFormUpdate from "./BtnFormUpdate";
+import { useMutationDataMasterWarrantyValid } from "@/query/MasterWarrantyValidQuery";
+import { IWarrantyValid } from "@/types/MasterWarrantyValid";
 
 const { confirm } = Modal;
 
 interface IProps {
-  row: Row<IMasterClassType>;
+  row: Row<IWarrantyValid>;
 }
 
 interface IPropsBtn {
@@ -20,7 +20,7 @@ interface IPropsBtn {
 
 const BtnDelete = ({ id }: IPropsBtn) => {
   const session = useSession();
-  const { handleDelete } = useMutationDataMasterClass({
+  const { handleDelete } = useMutationDataMasterWarrantyValid({
     token: session.data?.user.token,
   });
 

@@ -1,7 +1,8 @@
-import { useMutationDataMasterClass } from "@/query/MasterClassQuery";
-import { IFormMasterClassType } from "@/types/Asset";
+import { useMutationDataMasterWarrantyValid } from "@/query/MasterWarrantyValidQuery";
+import { IFormWarrantyValid, IWarrantyErrorBody } from "@/types/MasterWarrantyValid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Form, Input, Modal, Spin } from "antd";
+import { Form, Input, InputNumber, Modal, Spin } from "antd";
+import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -14,6 +15,7 @@ const schema = yup
     id: yup.string(),
     kode: yup.string().required(),
     name: yup.string().required(),
+    longWarranty: yup.number().required(),
     description: yup.string(),
   })
   .required();
@@ -21,11 +23,11 @@ const schema = yup
 type TFormData = yup.InferType<typeof schema>;
 
 interface IFormDefault {
-  data: IFormMasterClassType;
+  data: IFormWarrantyValid;
 }
 
 interface IPropsFormUpdate {
-  initValue: IFormMasterClassType;
+  initValue: IFormWarrantyValid;
   onCancel: () => void;
   onSubmit: () => void;
 }
@@ -35,15 +37,15 @@ const FormUpdate = ({ initValue, onCancel, onSubmit }: IPropsFormUpdate) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { handleUpdate } = useMutationDataMasterClass({
+  const { handleUpdate } = useMutationDataMasterWarrantyValid({
     token: session.data?.user.token,
   });
 
   //react form hook
-  const { handleSubmit, control } = useForm<TFormData>({
+  const { handleSubmit, control,setError } = useForm<TFormData>({
     defaultValues: {
-      name: initValue.name,
       kode: initValue.kode,
+      name: initValue.name,
       id: initValue.id,
       description: initValue.description,
     },
@@ -53,11 +55,26 @@ const FormUpdate = ({ initValue, onCancel, onSubmit }: IPropsFormUpdate) => {
   //on submit form
   const eventSubmit: SubmitHandler<TFormData> = async (data) => {
     setIsLoading(true);
-    await handleUpdate(data);
+    await handleUpdate(data,{
+      onError: (error:any) => {
+        onErrorSubmitData(error)
+      }
+    });
     setIsLoading(false);
     onSubmit();
   };
 
+  const onErrorSubmitData = (error: AxiosError<IWarrantyErrorBody>) => {
+    const itemsError = error.response?.data.errors;
+    if (itemsError) {
+      itemsError.kode?.map((v: string, i) => setError("kode", { message: v }));
+      itemsError.name?.map((v: string, i) => setError("name", { message: v }));
+      itemsError.longWarranty?.map((v: string, i) => setError("longWarranty", { message: v }));
+      itemsError.description?.map((v: string, i) => setError("description", { message: v }));
+    }
+    setIsLoading(false);
+  };
+  
   return (
     <Spin spinning={isLoading}>
       <Form
@@ -65,12 +82,16 @@ const FormUpdate = ({ initValue, onCancel, onSubmit }: IPropsFormUpdate) => {
         onFinish={handleSubmit(eventSubmit)}
         style={{ maxWidth: 600 }}
       >
+        <FormItem control={control} label="Kode" name="kode">
+          <Input />
+        </FormItem>
+
         <FormItem control={control} label="Name" name="name">
           <Input />
         </FormItem>
 
-        <FormItem control={control} label="Kode" name="kode">
-          <Input />
+        <FormItem control={control} label="Panjang Garansi" name="longWarranty">
+          <InputNumber className="w-full"/>
         </FormItem>
 
         <FormItem control={control} label="Deskripsi" name="description">
@@ -124,7 +145,7 @@ const BtnFormUpdate = ({ data }: IFormDefault) => {
         <BsPencilSquare />
       </span>
       <Modal
-        title="Ubah data master kelas Aset"
+        title="Ubah data master masa garansi"
         open={isOpen}
         footer={null}
         destroyOnClose

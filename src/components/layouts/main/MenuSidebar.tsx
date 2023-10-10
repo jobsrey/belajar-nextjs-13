@@ -118,6 +118,11 @@ const MenuMaster = () => {
       icon: <GrDocumentStore size={12} />,
       label: "Kelas",
     },
+    {
+      href: "/administrator/master/warranty-valid",
+      icon: <GrDocumentStore size={12} />,
+      label: "Warranty",
+    },
   ];
   return (
     <>
@@ -166,7 +171,7 @@ const MenuSidebar = () => {
             </summary>
             <ul>
               <li>
-                <ActiveLink href="/asset">
+                <ActiveLink href="/administrator/asset">
                   <FaThList size={12} /> Data Aset
                 </ActiveLink>
               </li>

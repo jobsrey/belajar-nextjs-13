@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  IFormMasterClassType,
-  IMasterClassCollactionType,
-} from "@/types/Asset";
+  useQuery,
+  useMutation,
+  useQueryClient,
+  MutateOptions,
+} from "@tanstack/react-query";
+
 import { signOut } from "next-auth/react";
 import useDebounce from "@/hooks/useDebounce";
 import { notification } from "antd";
+import { IAsset, IAssetCollaction } from "@/types/Asset";
 
 //IMPORTAN VARIABLE
-const queryNameKey = "collactionDataMasterClass";
-const endPointUrl = "/master/class";
+const queryNameKey = "collactionDataAsset";
+const endPointUrl = "/asset/master";
 
-interface ISearchParams {
-  name: string;
-  kode: string;
-  description: string;
-}
 
 interface TSortServe {
   sortColumnName?: string;
@@ -28,7 +26,7 @@ interface IProps {
   token: string | undefined;
 }
 
-export const useQueryDataMasterClass = ({ token }: IProps) => {
+export const useQueryDataAsset = ({ token }: IProps) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [filteredInfo, setFilteredInfo] = useState({});
@@ -38,10 +36,12 @@ export const useQueryDataMasterClass = ({ token }: IProps) => {
     page: page,
     "per-page": pageSize,
   });
-  const [filterField, setFilterField] = useState<ISearchParams>({
+  const [filterField, setFilterField] = useState<IAsset>({
+    genCosId: "",
+    genSysId: "",
     name: "",
-    kode: "",
     description: "",
+    barcode: "",
   });
 
   useDebounce(
@@ -83,7 +83,7 @@ export const useQueryDataMasterClass = ({ token }: IProps) => {
     const params = queryKey[1];
 
     try {
-      const response = await api.get<IMasterClassCollactionType>(endPointUrl, {
+      const response = await api.get<IAssetCollaction>(endPointUrl, {
         params,
         headers: { Authorization: "Bearer " + token },
       });
@@ -125,50 +125,52 @@ interface IBulkDelete {
   listId: string[];
 }
 
-export const useMutationDataMasterClass = ({ token }: IProps) => {
+export const useMutationDataAsset = ({ token }: IProps) => {
   //query client
   const queryClient = useQueryClient();
 
   //mutation create data
-  const createData = useMutation(async (data: IFormMasterClassType) => {
+  const createData = useMutation(async (data: IAsset) => {
     const formData = new FormData();
 
-    formData.append("kode", data?.kode as string);
-    formData.append("name", data?.name as string);
+    data?.genSysId && formData.append("genSysId", data?.genSysId as string);
+    data?.genCosId && formData.append("genCosId", data?.genCosId as string);
+    data.name && formData.append("name", data?.name as string);
     formData.append("description", data.description as string);
 
-    try {
-      await api.post(endPointUrl, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: "Bearer " + token,
-        },
-      });
+    await api.post(endPointUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + token,
+      },
+    });
 
-      notification.success({
-        message: "Berhasil",
-        description: "Kelas baru berhasil disimpan!",
-      });
-    } catch (_e: any) {
-      let e: Error = _e; // error under useUnknownInCatchVariables
-      notification.error({
-        message: "Error",
-        description: e.message,
-      });
-    }
+    notification.success({
+      message: "Berhasil",
+      description: "Status baru berhasil disimpan!",
+    });
   });
 
   //handle create
-  const handleCreate = async (data: IFormMasterClassType) => {
-    await createData.mutateAsync(data);
+  const handleCreate = async (
+    data: IAsset,
+    options?:
+      | MutateOptions<void, unknown, IAsset, unknown>
+      | undefined
+  ) => {
+    await createData.mutateAsync(data, options);
     queryClient.invalidateQueries([queryNameKey]);
   };
 
   //mutation update data
-  const updateData = useMutation(async (data: IFormMasterClassType) => {
+  const updateData = useMutation(async (data: IAsset) => {
     const formData = new FormData();
-    formData.append("kode", data?.kode as string);
-    formData.append("name", data?.name as string);
+    data?.genSysId && formData.append("genSysId", data?.genSysId as string);
+    data?.genCosId && formData.append("genCosId", data?.genCosId as string);
+    data.name && formData.append("name", data?.name as string);
+    formData.append("description", data.description as string);
+
+    formData.append("description", data.description as string);
     formData.append("_method", "PATCH");
 
     try {
@@ -181,7 +183,7 @@ export const useMutationDataMasterClass = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Kelas berhasil diubah!",
+        description: "Status berhasil diubah!",
       });
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
@@ -193,8 +195,11 @@ export const useMutationDataMasterClass = ({ token }: IProps) => {
   });
 
   //handle update
-  const handleUpdate = async (updatedData: IFormMasterClassType) => {
-    await updateData.mutateAsync(updatedData);
+  const handleUpdate = async (
+    updatedData: IAsset,
+    options?: MutateOptions<void, unknown, IAsset, unknown> | undefined
+  ) => {
+    await updateData.mutateAsync(updatedData, options);
     queryClient.invalidateQueries([queryNameKey]);
   };
 
@@ -213,7 +218,7 @@ export const useMutationDataMasterClass = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Kelas berhasil dihapus!",
+        description: "Status berhasil dihapus!",
       });
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables
@@ -244,7 +249,7 @@ export const useMutationDataMasterClass = ({ token }: IProps) => {
 
       notification.success({
         message: "Berhasil",
-        description: "Kelas berhasil dihapus!",
+        description: "Status berhasil dihapus!",
       });
     } catch (_e: any) {
       let e: Error = _e; // error under useUnknownInCatchVariables

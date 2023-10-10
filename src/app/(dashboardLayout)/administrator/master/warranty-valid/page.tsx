@@ -6,8 +6,8 @@ import React from "react";
 import PageClientProvider from "./PageClientProvider";
 
 export const metadata: Metadata = {
-  title: "Daftar Master Daftar Aset",
-  description: "Master mata daftar aset",
+  title: "Daftar Master Masa Garansi",
+  description: "Master mata masa garansi",
 };
 
 const PageUserAsset = async () => {
@@ -17,7 +17,7 @@ const PageUserAsset = async () => {
   }
   return <>
     <div className="flex justify-center items-center py-4">
-      <span className="text-lg font-bold">Data Asset</span>
+      <span className="text-lg font-bold">Master Data Masa Garansi</span>
     </div>
     <PageClientProvider session={session}/>
   </>;

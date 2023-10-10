@@ -2,18 +2,20 @@ import { RowModel } from "@tanstack/react-table";
 import { Modal } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
-import { useMutationDataMasterClass } from "@/query/MasterClassQuery";
-import { IMasterClassType } from "@/types/Asset";
+import { IFormWarrantyValid } from "@/types/MasterWarrantyValid";
+import { useMutationDataMasterWarrantyValid } from "@/query/MasterWarrantyValidQuery";
 
 const { confirm } = Modal;
 
-interface IProps {  
-  rowsData: RowModel<IMasterClassType>;
+interface IProps {
+  rowsData: RowModel<IFormWarrantyValid>;
 }
 
 export const BtnBulkDelete = ({ rowsData }: IProps) => {
   const session = useSession();
-  const {handleBulkDelete} = useMutationDataMasterClass({ token: session.data?.user.token });
+  const { handleBulkDelete } = useMutationDataMasterWarrantyValid({
+    token: session.data?.user.token,
+  });
 
   const showConfirm = () => {
     confirm({
@@ -29,9 +31,8 @@ export const BtnBulkDelete = ({ rowsData }: IProps) => {
 
   const prosesDeleteData = async () => {
     let listData: string[] = [];
-    rowsData.rows.map((v, i) => listData.push(v.original.id));
-    await handleBulkDelete({listId:listData});
-
+    rowsData.rows.map((v, i) => listData.push(v.original.id as string));
+    await handleBulkDelete({ listId: listData });
   };
 
   return (
